@@ -1,0 +1,118 @@
+# depslib dependency file v1.0
+1676336375 source:c:\users\ae\repos\rpg172\main.cpp
+	<windows.h>
+	<string.h>
+	<stdlib.h>
+	<iostream>
+	<windows.h>
+	<glscene.h>
+
+1677118304 c:\users\ae\repos\rpg172\include\glscene.h
+	<windows.h>
+	<string.h>
+	<iostream>
+	<GL/gl.h>
+	<GL/glut.h>
+
+1661970071 c:\users\ae\repos\rpg172\common\include\gl\glut.h
+	<windows.h>
+	<stdlib.h>
+	<GL/gl.h>
+	<GL/glu.h>
+
+1680324601 source:c:\users\ae\repos\rpg172\src\actor.cpp
+	"actor.h"
+
+1680324155 c:\users\ae\repos\rpg172\include\actor.h
+	<GL/gl.h>
+	<textureloader.h>
+	<commons.h>
+
+1676512918 c:\users\ae\repos\rpg172\include\textureloader.h
+	<iostream>
+	<SOIL.H>
+	<gl/gl.h>
+
+1664388885 c:\users\ae\repos\rpg172\common\include\soil.h
+
+1680117948 c:\users\ae\repos\rpg172\include\commons.h
+	<math.h>
+	<time.h>
+
+1679354345 source:c:\users\ae\repos\rpg172\src\checkcollision.cpp
+	"checkcollision.h"
+
+1679354345 c:\users\ae\repos\rpg172\include\checkcollision.h
+	<commons.h>
+
+1680324731 source:c:\users\ae\repos\rpg172\src\enemy.cpp
+	"enemy.h"
+
+1680324117 c:\users\ae\repos\rpg172\include\enemy.h
+	<GL/gl.h>
+	<textureloader.h>
+	"actor.h"
+	<commons.h>
+	<time.h>
+
+1675732753 source:c:\users\ae\repos\rpg172\src\gllight.cpp
+	"gllight.h"
+
+1675732720 c:\users\ae\repos\rpg172\include\gllight.h
+	<glscene.h>
+
+1680325323 source:c:\users\ae\repos\rpg172\src\glscene.cpp
+	"glscene.h"
+	<gllight.h>
+	<model.h>
+	<inputs.h>
+	<parallax.h>
+	"actor.h"
+	<player.h>
+	<enemy.h>
+	<checkcollision.h>
+
+1677117482 c:\users\ae\repos\rpg172\include\model.h
+	<windows.h>
+	<GL/glut.h>
+	<textureloader.h>
+
+1680117442 c:\users\ae\repos\rpg172\include\inputs.h
+	<windows.h>
+	<model.h>
+	<parallax.h>
+	<player.h>
+
+1677547363 c:\users\ae\repos\rpg172\include\parallax.h
+	<textureloader.h>
+	<SOIL.h>
+	<GL/gl.h>
+	<string.h>
+	<time.h>
+
+1680324117 c:\users\ae\repos\rpg172\include\player.h
+	<GL/gl.h>
+	<textureloader.h>
+	<commons.h>
+	"actor.h"
+
+1680231410 source:c:\users\ae\repos\rpg172\src\inputs.cpp
+	"inputs.h"
+
+1678145314 source:c:\users\ae\repos\rpg172\src\menu.cpp
+	"menu.h"
+
+1678145314 c:\users\ae\repos\rpg172\include\menu.h
+
+1679354467 source:c:\users\ae\repos\rpg172\src\model.cpp
+	"model.h"
+
+1680317960 source:c:\users\ae\repos\rpg172\src\parallax.cpp
+	"parallax.h"
+
+1680325703 source:c:\users\ae\repos\rpg172\src\player.cpp
+	"player.h"
+
+1676512971 source:c:\users\ae\repos\rpg172\src\textureloader.cpp
+	"textureloader.h"
+

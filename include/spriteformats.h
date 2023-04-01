@@ -1,0 +1,5 @@
+#ifndef SPRITEFORMATS_H
+#define SPRITEFORMATS_H
+
+
+#endif // SPRITEFORMATS_H

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="rpg172" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin/Debug/rpg172" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+				</Compiler>
+			</Target>
+			<Target title="Release">
+				<Option output="bin/Release/rpg172" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+			<Add directory="common/include" />
+			<Add directory="include" />
+		</Compiler>
+		<Linker>
+			<Add library="common/lib/libSOIL.a" />
+			<Add library="common/lib/libirrKlang.a" />
+			<Add library="common/lib/glut32.lib" />
+			<Add library="opengl32" />
+			<Add library="glu32" />
+			<Add library="gdi32" />
+			<Add directory="common/lib" />
+		</Linker>
+		<Unit filename="include/actor.h" />
+		<Unit filename="include/checkcollision.h" />
+		<Unit filename="include/commons.h" />
+		<Unit filename="include/enemy.h" />
+		<Unit filename="include/gllight.h" />
+		<Unit filename="include/glscene.h" />
+		<Unit filename="include/inputs.h" />
+		<Unit filename="include/menu.h" />
+		<Unit filename="include/model.h" />
+		<Unit filename="include/parallax.h" />
+		<Unit filename="include/player.h" />
+		<Unit filename="include/spriteformats.h" />
+		<Unit filename="include/textureloader.h" />
+		<Unit filename="main.cpp" />
+		<Unit filename="src/actor.cpp" />
+		<Unit filename="src/checkcollision.cpp" />
+		<Unit filename="src/enemy.cpp" />
+		<Unit filename="src/gllight.cpp" />
+		<Unit filename="src/glscene.cpp" />
+		<Unit filename="src/inputs.cpp" />
+		<Unit filename="src/menu.cpp" />
+		<Unit filename="src/model.cpp" />
+		<Unit filename="src/parallax.cpp" />
+		<Unit filename="src/player.cpp" />
+		<Unit filename="src/textureloader.cpp" />
+		<Extensions>
+			<lib_finder disable_auto="1" />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>
