@@ -17,6 +17,9 @@ class textureLoader
 
         unsigned char* image;   //image data storage
         int width,height;       //image size info
+        void loadTexture1(char *);
+        void TextureBinder();
+        GLuint tex;
 
     protected:
 

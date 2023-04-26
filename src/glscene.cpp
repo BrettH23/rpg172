@@ -9,6 +9,7 @@
 #include <enemy.h>
 #include <checkcollision.h>
 #include <bulletpool.h>
+#include <sound.h>
 
 #include "time.h"
 
@@ -18,6 +19,7 @@ parallax *prLX = new parallax();
 player *ply = new player();
 checkCollision *hit = new checkCollision();
 bulletpool *eBullets = new bulletpool();
+sound *snds = new sound();
 
 enemy ens[5];
 
@@ -26,7 +28,7 @@ clock_t timer;
 GLuint tempTex;
 GLuint bulletTex;
 
-bool gameActive = true;
+bool gameActive = false;
 
 GLubyte* collider = new GLubyte[1];
 
@@ -39,6 +41,15 @@ GLScene::GLScene()
     //ctor
     screenHeight = GetSystemMetrics(SM_CYSCREEN);
     screenWidth = GetSystemMetrics(SM_CXSCREEN);
+
+    LANDINGPAGE = true;
+    MENUPAGE = false;
+    GAMEPAGE = false;
+    HELPPAGE = false;
+    CREDITPAGE = false;
+    QUIT = false;
+    GAMEOVER = false;
+    INTRO = false;
 
 
 }
@@ -59,7 +70,7 @@ void drawSquare(){
 int jz = 0;
 int GLScene::drawScene()
 {
-    if(gameActive){
+        if(gameActive){
         drawGame();
     }else{
         drawMenu();
@@ -219,14 +230,28 @@ void GLScene::drawMenu()
     glDisable(GL_DEPTH_TEST);   //removed since using glortho
     glEnable (GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
     glDisable(GL_LIGHTING);     //full 2d needs no lighting
+    glLoadIdentity();
     float scale = 0.5;
     float scRat = float(screenWidth)/float(screenHeight);
 
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glOrtho (-scale*scRat, scale*scRat, -scale, scale, 0.5, -0.5);  //ortho is very nice for scaling 2d
+
+    if(LANDINGPAGE){
+    glPushMatrix();
+    lPage->drawPage(screenWidth, screenHeight);
+    glPopMatrix();
+    }
+    if(MENUPAGE){
+         glPushMatrix();
+         mPage->drawPage(screenWidth, screenHeight);
+        glPopMatrix();
+    }
+    if(HELPPAGE){
+         glPushMatrix();
+        hPage->drawPage(screenWidth,screenHeight);
+        glPopMatrix();
+    }
+
 }
 
 
@@ -247,6 +272,12 @@ int GLScene::GLinit()
     ply->playerInit("images/shipA2.png");
     ply->setSize(0.05);
 
+    lPage->pageInit("images/landingPage1.png");//image landing page
+    mPage->pageInit("images/menuPage1.png");//image Menu page
+    hPage->pageInit("images/helpPage1.png");//image Help page
+
+    snds->playMusic("sounds/gameSound.mp3");
+
     //eBullets->tLoad->loadTexture("images/bullets/bullet1.png", eBullets->bulletType[0].tex);
     eBullets->texInit();
 
@@ -262,6 +293,10 @@ int GLScene::GLinit()
     //KbMs->mdl = myFirstModel;   //copy model to mdl
 
     timer = clock();
+
+    if(snds->initSounds()){
+        return true;
+    }
     return true;
 }
 
@@ -323,7 +358,124 @@ int GLScene::winMsg(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     if(uMsg == WM_MOUSEWHEEL){
         KbMs->mouseWheel(myFirstModel,(double)GET_WHEEL_DELTA_WPARAM(wParam));
     }
-
-
+    /*
+    if(wParam == 's')
+    {
+        setMenuPage();
+    }
+    if(wParam == 'n'){
+    if(LANDINGPAGE == true)
+    {
+        setMenuPage();
+    }else{
+    LANDINGPAGE = false;
+    MENUPAGE = false;
+    GAMEPAGE = false;
+    HELPPAGE = false;
+    CREDITPAGE = false;
+    QUIT = false;
+    GAMEOVER = false;
+    INTRO = false;
+    gameActive = true;
+    }
+    }
+    if(wParam == 'h'){
+        //gameActive = false;
+        //setHelpPage();
+        if(gameActive == true){
+            gameActive = false;
+            setHelpPage();
+        }
+        else{
+            setHelpPage();
+        }
+    }
+    */
+    if(wParam == 's'){
+        setMenuPage();
+    }
+    if(MENUPAGE && wParam == 'n'){
+        gameActive = true;
+    }
+    if(MENUPAGE && wParam == 'h'){
+        setHelpPage();
+    }
+    if(HELPPAGE && wParam == 'r'){
+        setMenuPage();
+    }
 
 }
+
+void GLScene::setMenuPage()
+{
+    LANDINGPAGE = false;
+    MENUPAGE = true;
+    GAMEPAGE = false;
+    HELPPAGE = false;
+    CREDITPAGE = false;
+    QUIT = false;
+    GAMEOVER = false;
+    INTRO = false;
+}
+
+void GLScene::setGamePage()
+{
+    LANDINGPAGE = false;
+    MENUPAGE = false;
+    GAMEPAGE = true;
+    HELPPAGE = false;
+    CREDITPAGE = false;
+    QUIT = false;
+    GAMEOVER = false;
+    INTRO = false;
+}
+
+void GLScene::setHelpPage()
+{
+    LANDINGPAGE = false;
+    MENUPAGE = false;
+    GAMEPAGE = false;
+    HELPPAGE = true;
+    CREDITPAGE = false;
+    QUIT = false;
+    GAMEOVER = false;
+    INTRO = false;
+}
+
+void GLScene::setCreditPage()
+{
+    LANDINGPAGE = false;
+    MENUPAGE = false;
+    GAMEPAGE = false;
+    HELPPAGE = false;
+    CREDITPAGE = true;
+    QUIT = false;
+    GAMEOVER = false;
+    INTRO = false;
+}
+
+void GLScene::setQuitPage()
+{
+    LANDINGPAGE = false;
+    MENUPAGE = false;
+    GAMEPAGE = false;
+    HELPPAGE = false;
+    CREDITPAGE = false;
+    QUIT = true;
+    GAMEOVER = false;
+    INTRO = false;
+}
+
+void GLScene::setGameOverPage()
+{
+    LANDINGPAGE = true;
+    MENUPAGE = false;
+    GAMEPAGE = false;
+    HELPPAGE = false;
+    CREDITPAGE = false;
+    QUIT = false;
+    GAMEOVER = true;
+    INTRO = false;
+}
+
+
