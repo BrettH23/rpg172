@@ -191,12 +191,24 @@ void player::follow(float xM, float yM)
 
     if(topSpeed > fRatio){
         position.x = xM;
-        std::cout << fRatio << std::endl;
         position.y = yM;
 
     }else{
         position.x += adjX;
         position.y += adjY;
+    }
+    float xOffset = (3.0/8.0)-0.002;
+    float yOffset = 0.5-0.002;
+    if(position.x >= xOffset){
+        position.x = xOffset;
+    }if(position.x <= -xOffset){
+        position.x = -xOffset;
+    }
+
+    if(position.y >= yOffset){
+        position.y = yOffset;
+    }if(position.y <= -yOffset){
+        position.y = -yOffset;
     }
     /*
     if(abs(x1) > adjX){

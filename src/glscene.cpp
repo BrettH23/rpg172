@@ -35,6 +35,7 @@ GLubyte* collider = new GLubyte[1];
 float mouseX = 0.0;
 float mouseY = 0.0;
 
+int bulletCycle = 0;
 
 GLScene::GLScene()
 {
@@ -59,18 +60,18 @@ GLScene::~GLScene()
 
 }
 
-void drawSquare(){
+void drawSquare(float x, float y, float s){
     glBegin(GL_QUADS);
-        glTexCoord2f(0.0, 1.0); glVertex2f(-0.5, 0.5);
-        glTexCoord2f(1.0, 1.0); glVertex2f(0.5, 0.5);
-        glTexCoord2f(1.0, 0.0); glVertex2f(0.5, -0.5);
-        glTexCoord2f(0.0, 0.0); glVertex2f(-0.5, -0.5);
+        glTexCoord2f(0.0, 1.0); glVertex2f(-s + x, s + y);
+        glTexCoord2f(1.0, 1.0); glVertex2f(s + x, s + y);
+        glTexCoord2f(1.0, 0.0); glVertex2f(s + x, -s + y);
+        glTexCoord2f(0.0, 0.0); glVertex2f(-s + x, -s + y);
     glEnd();
 }
-int jz = 0;
+
 int GLScene::drawScene()
 {
-        if(gameActive){
+    if(gameActive){
         drawGame();
     }else{
         drawMenu();
@@ -98,7 +99,12 @@ void GLScene::drawGame()
         prLX->scroll(true, "y", 0.002); //autoscroll
         //ply->moveP();   //allows player to move, would be in idle if we had one
         ply->follow(mouseX, mouseY);
-        eBullets->fire(jz); jz++;//std::cout << jz << std::endl;
+        eBullets->fire(bulletCycle); //std::cout << jz << std::endl;
+        eBullets->aimed(bulletCycle, vec2{ply->position.x, ply->position.y});
+        bulletCycle++;
+        if(bulletCycle >= 100){ //cycles based on 5 second intervals
+            bulletCycle = 0;
+        }
         eBullets->tick();
     }
 
@@ -114,11 +120,12 @@ void GLScene::drawGame()
 
         glPushMatrix();
 
-            glColor3f(1.0,0.0,0.0);
-            glScalef(0.2, 0.2, 1.0);
-            glBindTexture(GL_TEXTURE_2D, bulletTex);
-            drawSquare();
-            glColor3f(1.0,1.0,1.0);
+            //glColor3f(1.0,0.0,0.0);
+            //glScalef(0.2, 0.2, 1.0);
+            //glBindTexture(GL_TEXTURE_2D, bulletTex);
+            //drawSquare();
+            //glColor3f(1.0,1.0,1.0);
+            eBullets->drawMasks(vec2{ply->position.x, ply->position.y});
 
             glBindTexture(GL_TEXTURE_2D, tempTex);
             glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, coordX, coordY, 1, 1,  0);
@@ -141,7 +148,7 @@ void GLScene::drawGame()
 
             prLX->drawSquare(screenHeight*(3.0/4.0),screenHeight);  //constrained to 3/4 ratio to emulate certain bullet hell games, parallax is scaled to be height of 1.0
 
-            eBullets->draw();
+
 
         glPopMatrix();
 
@@ -180,16 +187,6 @@ void GLScene::drawGame()
         glPopMatrix();
 
 
-        glPushMatrix();
-
-            //glColor3f(1.0,0.0,0.0);
-            glScalef(0.2, 0.2, 1.0);
-            glBindTexture(GL_TEXTURE_2D, bulletTex);
-            drawSquare();
-            //glColor3f(1.0,1.0,1.0);
-        glPopMatrix();
-
-
         //*
         glPushMatrix();
 
@@ -208,13 +205,32 @@ void GLScene::drawGame()
         glPopMatrix();
 
         glPushMatrix();
-            glBindTexture(GL_TEXTURE_2D, tempTex);
 
-            glTranslatef(0.5,0.35,0.0);
-            glScalef(0.2, 0.2, 1.0);
-            drawSquare();
+            //glColor4f(1.0,1.0,1.0, 0.1);
 
+            eBullets->draw();
+
+            //drawSquare();
+            //glColor4f(1.0,1.0,1.0, 1.0);
         glPopMatrix();
+
+        glPushMatrix();
+            glDisable(GL_TEXTURE_2D);
+            glColor3f(0.0, 0.0, 0.0);
+
+            drawSquare((7.0/8.0), 0.0, 0.5);
+            drawSquare((-7.0/8.0), 0.0, 0.5);
+
+            glColor3f(1.0, 1.0, 1.0);
+            glEnable(GL_TEXTURE_2D);
+        glPopMatrix();
+
+        glPushMatrix();
+            glBindTexture(GL_TEXTURE_2D, tempTex);
+            drawSquare(0.5, 0.3, 0.06);
+        glPopMatrix();
+
+
 
         //*/
         glEnable(GL_LIGHTING);
@@ -231,27 +247,30 @@ void GLScene::drawMenu()
     glEnable (GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glDisable(GL_LIGHTING);     //full 2d needs no lighting
+    glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     float scale = 0.5;
     float scRat = float(screenWidth)/float(screenHeight);
 
-
-    if(LANDINGPAGE){
     glPushMatrix();
-    lPage->drawPage(screenWidth, screenHeight);
-    glPopMatrix();
-    }
-    if(MENUPAGE){
-         glPushMatrix();
-         mPage->drawPage(screenWidth, screenHeight);
-        glPopMatrix();
-    }
-    if(HELPPAGE){
-         glPushMatrix();
-        hPage->drawPage(screenWidth,screenHeight);
-        glPopMatrix();
-    }
+        glOrtho (-scale*scRat, scale*scRat, -scale, scale, 0.5, -0.5);
 
+        if(LANDINGPAGE){
+        //glPushMatrix();
+        lPage->drawPage(screenWidth, screenHeight);
+        //glPopMatrix();
+        }
+        if(MENUPAGE){
+             //glPushMatrix();
+             mPage->drawPage(screenWidth, screenHeight);
+            //glPopMatrix();
+        }
+        if(HELPPAGE){
+             //glPushMatrix();
+            hPage->drawPage(screenWidth,screenHeight);
+            //glPopMatrix();
+        }
+    glPopMatrix();
 }
 
 
@@ -391,16 +410,16 @@ int GLScene::winMsg(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         }
     }
     */
-    if(wParam == 's'){
+    if(wParam == 's' || wParam == 'S'){
         setMenuPage();
     }
-    if(MENUPAGE && wParam == 'n'){
+    if((wParam == 'n' || wParam == 'N')){
         gameActive = true;
     }
-    if(MENUPAGE && wParam == 'h'){
+    if(wParam == 'h' || wParam == 'H'){
         setHelpPage();
     }
-    if(HELPPAGE && wParam == 'r'){
+    if(wParam == 'r' || wParam == 'R'){
         setMenuPage();
     }
 

@@ -7,12 +7,13 @@
 	<windows.h>
 	<glscene.h>
 
-1682481373 c:\users\ae\repos\rpg172\include\glscene.h
+1682539141 c:\users\ae\repos\rpg172\include\glscene.h
 	<windows.h>
 	<string.h>
 	<iostream>
 	<GL/gl.h>
 	<GL/glut.h>
+	<menu.h>
 
 1661970071 c:\users\ae\repos\rpg172\common\include\gl\glut.h
 	<windows.h>
@@ -28,7 +29,7 @@
 	<textureloader.h>
 	<commons.h>
 
-1676512918 c:\users\ae\repos\rpg172\include\textureloader.h
+1682539141 c:\users\ae\repos\rpg172\include\textureloader.h
 	<iostream>
 	<SOIL.H>
 	<gl/gl.h>
@@ -61,7 +62,7 @@
 1675732720 c:\users\ae\repos\rpg172\include\gllight.h
 	<glscene.h>
 
-1682485321 source:c:\users\ae\repos\rpg172\src\glscene.cpp
+1682540297 source:c:\users\ae\repos\rpg172\src\glscene.cpp
 	"glscene.h"
 	<gllight.h>
 	<model.h>
@@ -72,6 +73,7 @@
 	<enemy.h>
 	<checkcollision.h>
 	<bulletpool.h>
+	<sound.h>
 	"time.h"
 
 1677117482 c:\users\ae\repos\rpg172\include\model.h
@@ -101,10 +103,12 @@
 1682451681 source:c:\users\ae\repos\rpg172\src\inputs.cpp
 	"inputs.h"
 
-1678145314 source:c:\users\ae\repos\rpg172\src\menu.cpp
+1682540422 source:c:\users\ae\repos\rpg172\src\menu.cpp
 	"menu.h"
 
-1678145314 c:\users\ae\repos\rpg172\include\menu.h
+1682539141 c:\users\ae\repos\rpg172\include\menu.h
+	<textureloader.h>
+	<GL/gl.h>
 
 1679354467 source:c:\users\ae\repos\rpg172\src\model.cpp
 	"model.h"
@@ -112,17 +116,122 @@
 1680317960 source:c:\users\ae\repos\rpg172\src\parallax.cpp
 	"parallax.h"
 
-1682485159 source:c:\users\ae\repos\rpg172\src\player.cpp
+1682539149 source:c:\users\ae\repos\rpg172\src\player.cpp
 	"player.h"
 
-1682450094 source:c:\users\ae\repos\rpg172\src\textureloader.cpp
+1682539141 source:c:\users\ae\repos\rpg172\src\textureloader.cpp
 	"textureloader.h"
 
-1682452328 source:c:\users\ae\repos\rpg172\src\bulletpool.cpp
+1682539617 source:c:\users\ae\repos\rpg172\src\bulletpool.cpp
 	"bulletpool.h"
 
-1682450832 c:\users\ae\repos\rpg172\include\bulletpool.h
+1682539149 c:\users\ae\repos\rpg172\include\bulletpool.h
 	<GL/gl.h>
 	"textureloader.h"
 	"commons.h"
+
+1682539141 c:\users\ae\repos\rpg172\include\sound.h
+	<SNDS/irrKlang.h>
+	<stdlib.h>
+	<iostream>
+
+1679529420 c:\users\ae\repos\rpg172\common\include\snds\irrklang.h
+	"ik_irrKlangTypes.h"
+	"ik_vec3d.h"
+	"ik_IRefCounted.h"
+	"ik_IVirtualRefCounted.h"
+	"ik_ESoundOutputDrivers.h"
+	"ik_ESoundEngineOptions.h"
+	"ik_EStreamModes.h"
+	"ik_SAudioStreamFormat.h"
+	"ik_ISoundEngine.h"
+	"ik_ISoundSource.h"
+	"ik_ISound.h"
+	"ik_IAudioStream.h"
+	"ik_IAudioStreamLoader.h"
+	"ik_ISoundEffectControl.h"
+	"ik_ISoundStopEventReceiver.h"
+	"ik_IFileFactory.h"
+	"ik_IFileReader.h"
+	"ik_ISoundDeviceList.h"
+	"ik_IAudioRecorder.h"
+	"ik_ISoundMixedOutputReceiver.h"
+
+1679529420 c:\users\ae\repos\rpg172\common\include\snds\ik_irrklangtypes.h
+	<wchar.h>
+
+1679529420 c:\users\ae\repos\rpg172\common\include\snds\ik_vec3d.h
+	<math.h>
+	"ik_irrKlangTypes.h"
+
+1679529420 c:\users\ae\repos\rpg172\common\include\snds\ik_irefcounted.h
+	"ik_irrKlangTypes.h"
+
+1679529420 c:\users\ae\repos\rpg172\common\include\snds\ik_ivirtualrefcounted.h
+	"ik_irrKlangTypes.h"
+
+1679529420 c:\users\ae\repos\rpg172\common\include\snds\ik_esoundoutputdrivers.h
+
+1679529420 c:\users\ae\repos\rpg172\common\include\snds\ik_esoundengineoptions.h
+
+1679529420 c:\users\ae\repos\rpg172\common\include\snds\ik_estreammodes.h
+
+1679529420 c:\users\ae\repos\rpg172\common\include\snds\ik_saudiostreamformat.h
+	"ik_IRefCounted.h"
+
+1679529420 c:\users\ae\repos\rpg172\common\include\snds\ik_isoundengine.h
+	"ik_IRefCounted.h"
+	"ik_vec3d.h"
+	"ik_ISoundSource.h"
+	"ik_ISound.h"
+	"ik_EStreamModes.h"
+	"ik_IFileFactory.h"
+	"ik_ISoundMixedOutputReceiver.h"
+
+1679529420 c:\users\ae\repos\rpg172\common\include\snds\ik_isoundsource.h
+	"ik_IVirtualRefCounted.h"
+	"ik_vec3d.h"
+	"ik_EStreamModes.h"
+	"ik_SAudioStreamFormat.h"
+
+1679529420 c:\users\ae\repos\rpg172\common\include\snds\ik_isound.h
+	"ik_IVirtualRefCounted.h"
+	"ik_ISoundEffectControl.h"
+	"ik_vec3d.h"
+
+1679529420 c:\users\ae\repos\rpg172\common\include\snds\ik_isoundeffectcontrol.h
+	"ik_IVirtualRefCounted.h"
+	"ik_vec3d.h"
+
+1679529420 c:\users\ae\repos\rpg172\common\include\snds\ik_ifilefactory.h
+	"ik_IRefCounted.h"
+
+1679529420 c:\users\ae\repos\rpg172\common\include\snds\ik_isoundmixedoutputreceiver.h
+	"ik_IRefCounted.h"
+	"ik_SAudioStreamFormat.h"
+
+1679529420 c:\users\ae\repos\rpg172\common\include\snds\ik_iaudiostream.h
+	"ik_IRefCounted.h"
+	"ik_SAudioStreamFormat.h"
+
+1679529420 c:\users\ae\repos\rpg172\common\include\snds\ik_iaudiostreamloader.h
+	"ik_IRefCounted.h"
+	"ik_IFileReader.h"
+
+1679529420 c:\users\ae\repos\rpg172\common\include\snds\ik_ifilereader.h
+	"ik_IRefCounted.h"
+
+1679529420 c:\users\ae\repos\rpg172\common\include\snds\ik_isoundstopeventreceiver.h
+	"ik_IRefCounted.h"
+	"ik_SAudioStreamFormat.h"
+
+1679529420 c:\users\ae\repos\rpg172\common\include\snds\ik_isounddevicelist.h
+	"ik_IRefCounted.h"
+
+1679529420 c:\users\ae\repos\rpg172\common\include\snds\ik_iaudiorecorder.h
+	"ik_IRefCounted.h"
+	"ik_ISoundSource.h"
+
+1682539141 source:c:\users\ae\repos\rpg172\src\sound.cpp
+	"sound.h"
 
