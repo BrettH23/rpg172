@@ -371,7 +371,9 @@ int WINAPI WinMain(	HINSTANCE	hInstance,			// Instance
 	}
 
 	// Shutdown
+
 	KillGLWindow();									// Kill The Window
+	delete Scene;
 	return (msg.wParam);							// Exit The Program
 }
 

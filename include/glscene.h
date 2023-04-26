@@ -14,6 +14,8 @@ class GLScene
         GLScene();
         virtual ~GLScene();
         int drawScene();   //main render
+        void drawGame();
+        void drawMenu();
         int GLinit();       //initialize scene
         void GLReSize(GLsizei, GLsizei);    //resize callback function
 

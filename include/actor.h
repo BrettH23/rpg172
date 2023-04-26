@@ -14,14 +14,6 @@ typedef struct frame
     frame* next = nullptr;
 };
 
-typedef struct bullet
-{
-    float x, y, z;
-    float speedY;
-    time_t born;
-    bullet* next;
-};
-
 class actor
 {
     public:

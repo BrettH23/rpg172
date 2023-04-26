@@ -18,7 +18,7 @@ void textureLoader::loadTexture(char* filename, GLuint& tID)
     image = SOIL_load_image(filename, &width, &height, 0, SOIL_LOAD_RGBA);
 
     if(!image){
-        std::cout << 'No image found.' << std::endl;
+        std::cout << "No image found." << std::endl;
     }
 
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);

@@ -13,6 +13,7 @@
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-g" />
+					<Add directory="include" />
 				</Compiler>
 			</Target>
 			<Target title="Release">
@@ -22,6 +23,7 @@
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-O2" />
+					<Add directory="include" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -43,6 +45,7 @@
 			<Add directory="common/lib" />
 		</Linker>
 		<Unit filename="include/actor.h" />
+		<Unit filename="include/bulletpool.h" />
 		<Unit filename="include/checkcollision.h" />
 		<Unit filename="include/commons.h" />
 		<Unit filename="include/enemy.h" />
@@ -52,11 +55,13 @@
 		<Unit filename="include/menu.h" />
 		<Unit filename="include/model.h" />
 		<Unit filename="include/parallax.h" />
+		<Unit filename="include/patterndefs.h" />
 		<Unit filename="include/player.h" />
 		<Unit filename="include/spriteformats.h" />
 		<Unit filename="include/textureloader.h" />
 		<Unit filename="main.cpp" />
 		<Unit filename="src/actor.cpp" />
+		<Unit filename="src/bulletpool.cpp" />
 		<Unit filename="src/checkcollision.cpp" />
 		<Unit filename="src/enemy.cpp" />
 		<Unit filename="src/gllight.cpp" />

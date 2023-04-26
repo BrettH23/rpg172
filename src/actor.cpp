@@ -19,31 +19,13 @@ actor::actor()
 
 actor::~actor()   //destructor for player, needs to clear those animations
 {
-    for(int i = 0;i < 3; i++){
-        frame* tempFrame = &animations[i];
-        while(tempFrame!=nullptr){
-            if(tempFrame->next == &animations[i]){
-                tempFrame->next = nullptr;  //makes sure deletion can't loop back to head
-            }
-        }
-    }
-    for(int i = 0;i < 3; i++){
-        frame* thisFrame = &animations[i];
-        while(thisFrame!=nullptr){
 
-            frame* tempFrame = thisFrame;
-            thisFrame = thisFrame->next;
-            delete tempFrame;   //destroy all frames
-
-        }
-    }
 
 }
 
 void actor::draw()
 {
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+
     glPushMatrix();
     glBindTexture(GL_TEXTURE_2D,tex);
     glTranslated(position.x,position.y,position.z);
@@ -73,7 +55,7 @@ void actor::texInit(char* filename)
 
 
     tLoad->loadTexture(filename, tex);
-    tLoad->loadTexture("images/bullet.png", bulletTex); //bullet is stored in the player class
+    //tLoad->loadTexture("images/bullet.png", bulletTex); //bullet is stored in the player class
 }
 
 void actor::setSize(float sizeToSet)

@@ -19,8 +19,11 @@ player::player()
 
     sizeRadius = 0.5;
 
-    speed.x = 0.008;
-    speed.y = 0.008;
+    speed.x = 0.002;
+    speed.y = 0.002;
+
+    topSpeed = 0.008;
+
     dUp = dDown = dRight = dLeft = firing = false; //determines which directions are being held allowing orthogonal movement
 }
 
@@ -44,7 +47,6 @@ player::~player()   //destructor for player, needs to clear those animations
 
         }
     }
-
 }
 
 void player::playerInit(char* filename)
@@ -176,6 +178,40 @@ void player::moveP()    //used for moving the player, also checks if time is all
     }
 
 }
+
+void player::follow(float xM, float yM)
+{
+    float x1 = xM - position.x;
+    float y1 = yM - position.y;
+    float fRatio = sqrt(x1*x1 + y1*y1);
+    float adjX = (x1*topSpeed)/fRatio;
+    float adjY = (y1*topSpeed)/fRatio;
+
+
+
+    if(topSpeed > fRatio){
+        position.x = xM;
+        std::cout << fRatio << std::endl;
+        position.y = yM;
+
+    }else{
+        position.x += adjX;
+        position.y += adjY;
+    }
+    /*
+    if(abs(x1) > adjX){
+std::cout << xM << std::endl;
+    }else{
+
+    }
+
+    if(abs(y1) > adjY){
+std::cout << yM << std::endl;
+    }else{
+
+    }*/
+}
+
 
 
 

@@ -62,23 +62,18 @@ void Inputs::keyPressed(Model * mdl)
 }
 void Inputs::keyPlayer(player* ply)
 {
-    switch(wParam){ //instead of incrementing user, sets a user state, then the user deals with the motion accordingly. Allows speed to not be locked to input speed
-        case ' ':
-            ply->firing = true;
-            break;
-        case VK_LEFT:
-            ply->dLeft = true;
-            break;
-        case VK_RIGHT:
-            ply->dRight = true;
-            break;
-        case VK_UP:
-            ply->dUp = true;
-            break;
-        case VK_DOWN:
-            ply->dDown = true;
-            break;
-    }
+    //switch(wParam){ //instead of incrementing user, sets a user state, then the user deals with the motion accordingly. Allows speed to not be locked to input speed
+        if(wParam == ' ')ply->firing = true;
+
+        if(wParam == 'a'||wParam == 'A')ply->dLeft = true;
+
+        if(wParam == 'd'||wParam == 'D')ply->dRight = true;
+
+        if(wParam == 'w'||wParam == 'W')ply->dUp = true;
+
+        if(wParam == 's'||wParam == 'S')ply->dDown = true;
+
+    //}
 
 
 }
@@ -86,23 +81,16 @@ void Inputs::keyPlayer(player* ply)
 void Inputs::keyPlayerUp(player* ply)
 {
 
-    switch(wParam){ //clears player state where required
-        case ' ':
-            ply->firing = false;
-            break;
-        case VK_LEFT:
-            ply->dLeft = false;
-            break;
-        case VK_RIGHT:
-            ply->dRight = false;
-            break;
-        case VK_UP:
-            ply->dUp = false;
-            break;
-        case VK_DOWN:
-            ply->dDown = false;
-            break;
-    }
+        if(wParam == ' ')ply->firing = false;
+
+        if(wParam == 'a'||wParam == 'A')ply->dLeft = false;
+
+        if(wParam == 'd'||wParam == 'D')ply->dRight = false;
+
+        if(wParam == 'w'||wParam == 'W')ply->dUp = false;
+
+        if(wParam == 's'||wParam == 'S')ply->dDown = false;
+
 }
 
 
@@ -144,6 +132,8 @@ void Inputs::mouseWheel(Model *mdl,double delta)
 
 void Inputs::mouseMove(Model *mdl, double x, double y)
 {
+    //std::cout << x << ", "<< y <<  std::endl;
+
     if(Mouse_translate){
         mdl->posX+=(x-prev_Mx)/100.0;
         mdl->posY-=(y-prev_My)/100.0;
