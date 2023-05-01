@@ -58,12 +58,12 @@ void actor::texInit(char* filename)
     //tLoad->loadTexture("images/bullet.png", bulletTex); //bullet is stored in the player class
 }
 
-void actor::setSize(float sizeToSet)
+void actor::setSize(float szX, float szY)
 {
-    sizeRadius = sizeToSet;
+    //sizeRadius = sizeToSet;
     for(int i = 0; i < 4; i++){ //resizes all verts, allowed me to change the size around easily
-        verts[i].x = sizeRadius;
-        verts[i].y = sizeRadius;
+        verts[i].x = szX;
+        verts[i].y = szY;
     }
     verts[0].x *= -1.0;verts[3].x *= -1.0;
     verts[0].y *= -1.0;verts[1].y *= -1.0;

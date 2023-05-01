@@ -53,8 +53,8 @@ void player::playerInit(char* filename)
 {
     texInit(filename);
 
-    vFrames = 4;
-    hFrames = 4;
+    vFrames = 1;
+    hFrames = 3;
 
     xMax = 1.0/(float)hFrames;
     xMin = 0.0;
@@ -66,18 +66,20 @@ void player::playerInit(char* filename)
 
     animations = new frame[3];
 
+    int animX[4] = {0,1,2,1};
+
     for(int j = 0; j < 3; j++){ //custom animation system, uses loops since all animations are exactly four frames.
         curFrame = &animations[j];  //current frame of animation stores the 'coordinates' of the current sprite tile
         curFrame->x = 0;            //first frame initialized, loop gets the rest.
-        curFrame->y = j;
+        curFrame->y = 0;
         curFrame->next = nullptr;   //animations are linked lists
 
         for(int i = 1; i < 4; i++){
             frame* tempFrame = new frame;   //similar to previous operations, animations are pretty much a grid
             curFrame->next = tempFrame;
             curFrame = tempFrame;
-            curFrame->x = i;
-            curFrame->y = j;
+            curFrame->x = animX[i];
+            curFrame->y = 0;
             curFrame->next = nullptr;
         }
         curFrame->next = &animations[j];
@@ -179,7 +181,7 @@ void player::moveP()    //used for moving the player, also checks if time is all
 
 }
 
-void player::follow(float xM, float yM)
+void player::follow(float xM, float yM, int cycle)
 {
     float x1 = xM - position.x;
     float y1 = yM - position.y;
@@ -187,6 +189,9 @@ void player::follow(float xM, float yM)
     float adjX = (x1*topSpeed)/fRatio;
     float adjY = (y1*topSpeed)/fRatio;
 
+    if(cycle % 3 == 0){
+        this->actions(WALKR);
+    }
 
 
     if(topSpeed > fRatio){

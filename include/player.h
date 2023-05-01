@@ -24,7 +24,7 @@ class player : public actor
         void playerInit(char*);
         void actions(acts);
         void moveP();
-        void follow(float, float);
+        void follow(float, float, int);
 
 
         bool direction;

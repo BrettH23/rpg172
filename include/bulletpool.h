@@ -17,6 +17,8 @@ typedef struct bullet{
     vec2 p;
     vec2 v;
     vec2 a;
+    float angle;
+    float angVel;
     int ticks;
 };
 
@@ -55,7 +57,7 @@ class bulletpool
         void draw();
         void drawMasks(vec2);
 
-        void spawn(int, int, float, float, float, vec2);
+        void spawn(int, int, float, float, float, float, vec2);
         void die(dll*);
         void tick();
         bool checkBounds(int, int);

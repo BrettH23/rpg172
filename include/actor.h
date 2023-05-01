@@ -34,7 +34,7 @@ class actor
 
         void draw();
         void texInit(char*);
-        void setSize(float);
+        void setSize(float, float);
 
         clock_t lastTick;
         clock_t bulletClock;

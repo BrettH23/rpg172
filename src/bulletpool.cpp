@@ -21,7 +21,7 @@ bulletpool::bulletpool()
     bounds[0] = vec2{(0.5*(3.0/4.0)), 0.5};
     bounds[1] = vec2{(-0.5*(3.0/4.0)), -0.5};
 
-    bulletType[0].radius = 0.02;
+    bulletType[0].radius = 0.014;
     bulletType[0].alive = nullptr;
 
     bulletType[1].radius = 0.008;
@@ -30,10 +30,10 @@ bulletpool::bulletpool()
 
 void bulletpool::texInit()
 {
-    tLoad->loadTexture("images/bullets/bullet1.png", bulletType[0].tex);
-    tLoad->loadTexture("images/bullets/mask1.png", bulletType[0].mask);
-    tLoad->loadTexture("images/bullets/bullet2.png", bulletType[1].tex);
-    tLoad->loadTexture("images/bullets/mask2.png", bulletType[1].mask);
+    tLoad->loadTexture("SPRITES/bullets/tentacleBullet.png", bulletType[0].tex);
+    tLoad->loadTexture("SPRITES/bullets/tentacleBullet.png", bulletType[0].mask);
+    tLoad->loadTexture("SPRITES/bullets/crabBullet.png", bulletType[1].tex);
+    tLoad->loadTexture("SPRITES/bullets/crabBullet.png", bulletType[1].mask);
 }
 
 
@@ -45,7 +45,6 @@ void bulletpool::draw()
 {
     glPushMatrix();
     glEnable(GL_TEXTURE_2D);
-
     for(int i = 0;i < typeCount;i++){
         glBindTexture(GL_TEXTURE_2D, bulletType[i].tex);
         dll* temp = bulletType[i].alive;
@@ -67,7 +66,7 @@ void bulletpool::drawMasks(vec2 ply)
 {
     glPushMatrix();
     glEnable(GL_TEXTURE_2D);
-
+    glColor3f(1.0,0.0,0.0);
     for(int i = 0;i < typeCount;i++){
         glBindTexture(GL_TEXTURE_2D, bulletType[i].mask);
         dll* temp = bulletType[i].alive;
@@ -87,10 +86,11 @@ void bulletpool::drawMasks(vec2 ply)
             temp = temp->next;
         }
     }
+    glColor3f(1.0,1.0,1.0);
     glPopMatrix();
 }
 
-void bulletpool::spawn(int type, int life, float vel, float accel, float ang, vec2 p)
+void bulletpool::spawn(int type, int life, float vel, float accel, float ang, float angVel, vec2 p)
 {
     if(dead!=nullptr){
 
@@ -126,6 +126,8 @@ void bulletpool::spawn(int type, int life, float vel, float accel, float ang, ve
         bullets[index].v.x = vel*sin(ang);
         bullets[index].v.y = vel*cos(ang);
         bullets[index].p = p;
+        bullets[index].angVel = angVel;
+        bullets[index].angle = ang;
 
 
     }
@@ -177,6 +179,24 @@ void bulletpool::tick()
             bullets[temp->index].p.y += bullets[temp->index].v.y;
             bullets[temp->index].v.x += bullets[temp->index].a.x;
             bullets[temp->index].v.y += bullets[temp->index].a.y;
+            if(bullets[temp->index].angVel != 0.0){
+                bullets[temp->index].angle+= bullets[temp->index].angVel;
+                float ang = bullets[temp->index].angle;
+                vec2 p = bullets[temp->index].p;
+                float rad = bulletType[i].radius;
+                bullets[temp->index].verts[0] = vec2{-rad,-rad};
+                bullets[temp->index].verts[1] = vec2{rad,-rad};
+                bullets[temp->index].verts[2] = vec2{rad,rad};
+                bullets[temp->index].verts[3] = vec2{-rad,rad};
+
+                for(int j = 0;j < 4;j++){
+                    float tempX = bullets[temp->index].verts[j].x;
+                    float tempY = bullets[temp->index].verts[j].y;
+                    bullets[temp->index].verts[j].x = tempX*cos(ang) + tempY*sin(ang) + p.x;
+                    bullets[temp->index].verts[j].y = -tempX*sin(ang) + tempY*cos(ang) + p.y;
+                }
+
+            }
             for(int j = 0;j < 4;j++){
                 bullets[temp->index].verts[j].x += bullets[temp->index].v.x;
                 bullets[temp->index].verts[j].y += bullets[temp->index].v.y;
@@ -200,8 +220,8 @@ void bulletpool::fire(int cycle)
     vec2 p = vec2{0.2,0.1};
     //vec2 v = vec2{0,0};
     //vec2 a = vec2{0,0};
-    spawn(0, 1000, 0.0025, 0.0000, fireAngle, p);
-    spawn(0, 1000, -0.0025, 0.0000, fireAngle, p);
+    spawn(0, 1000, -0.0021, 0.0000, fireAngle, 0.0, p);
+    spawn(0, 1000, -0.0021, 0.0000, fireAngle + PI, 0.0, p);
     fireAngle += 0.088*PI;
     if(fireAngle >= 2*PI){
         fireAngle -= 2*PI;
@@ -209,18 +229,18 @@ void bulletpool::fire(int cycle)
 }
 void bulletpool::aimed(int cycle, vec2 ply)
 {
-    if(cycle > 20 && cycle <= 27){
+    if(cycle > 20 && cycle <= 30 ){
         vec2 p = vec2{-0.2, 0.1};
-        float theta = atan((ply.x - p.x)/ (ply.y - p.y));
+        float theta = PI + atan((ply.x - p.x)/ (ply.y - p.y));
         if(p.y > ply.y){
             theta += PI;
         }
         for(int i = 0; i < 20; i++){
             float rand1 = (2*float(rand())/float(RAND_MAX) - 1)*0.18;
             float rand2 = (2*float(rand())/float(RAND_MAX) - 1)*0.003;
-            int rand3 = rand()%4;
-            if(rand3 > 1) rand3 = 1;
-            spawn(rand3, 1000, 0.004+ rand2, 0.0001, theta + rand1, p);
+            //int rand3 = rand()%4;
+            //if(rand3 > 1) rand3 = 1;
+            spawn(1, 1000, -0.004+ rand2, -0.0001, theta + rand1, 0.2, p);
         }
 
     }
