@@ -23,17 +23,17 @@ GLvoid menu::drawPage(GLfloat w , GLfloat h)
     glPushMatrix();
 
     tex->TextureBinder();
-    glScaled(4.15,4.14,1.0);
+    //glScaled(4.15,4.14,1.0);
 
     glBegin(GL_POLYGON);
     glTexCoord2f(xMin,yMin);
-    glVertex3f(-w/h,1,-10.0f);
+    glVertex2f(-w/(2*h),0.5);
     glTexCoord2f(xMax,yMin);
-    glVertex3f(w/h,1,-10.0f);
+    glVertex2f(w/(2*h),0.5);
     glTexCoord2f(xMax,yMax);
-    glVertex3f(w/h,-1,-10.0f);
+    glVertex2f(w/(2*h),-0.5);
     glTexCoord2f(xMin,yMax);
-    glVertex3f(-w/h,-1,-10.0f);
+    glVertex2f(-w/(2*h),-0.5);
 
     glEnd();
 }

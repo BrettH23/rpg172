@@ -17,6 +17,8 @@ typedef struct bullet{
     vec2 p;
     vec2 v;
     vec2 a;
+    float angle;
+    float angVel;
     int ticks;
 };
 
@@ -41,6 +43,8 @@ class bulletpool
 
         dll* dead;  //head pointer to one dll chain
 
+        vec2 bounds[2];
+
         int typeCount;
         type_b* bulletType;  //array of types of bullets corresponding to alive indices
         //dll* alive;         //array of head pointer to dll chains
@@ -51,10 +55,15 @@ class bulletpool
 
         void texInit();
         void draw();
-        void fire(int);
-        void spawn(int, int, float, float, float, vec2);
-        void die(dll);
+        void drawMasks(vec2);
+
+        void spawn(int, int, float, float, float, float, vec2);
+        void die(dll*);
         void tick();
+        bool checkBounds(int, int);
+
+        void fire(int);
+        void aimed(int, vec2);
 
         textureLoader *tLoad = new textureLoader();
 

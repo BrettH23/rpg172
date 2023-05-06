@@ -17,7 +17,7 @@ parallax::~parallax()
 
 void parallax::drawSquare(float width, float height)
 {
-    glColor3f(1.0, 1.0, 1.0);
+    //glColor3f(1.0, 1.0, 1.0);
     bTex->binder(tex);
     float pRatio = width/height;
     glBegin(GL_POLYGON);
