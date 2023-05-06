@@ -57,6 +57,7 @@
 		<Unit filename="include/parallax.h" />
 		<Unit filename="include/patterndefs.h" />
 		<Unit filename="include/player.h" />
+		<Unit filename="include/sound.h" />
 		<Unit filename="include/spriteformats.h" />
 		<Unit filename="include/textureloader.h" />
 		<Unit filename="main.cpp" />
@@ -71,6 +72,7 @@
 		<Unit filename="src/model.cpp" />
 		<Unit filename="src/parallax.cpp" />
 		<Unit filename="src/player.cpp" />
+		<Unit filename="src/sound.cpp" />
 		<Unit filename="src/textureloader.cpp" />
 		<Extensions>
 			<lib_finder disable_auto="1" />

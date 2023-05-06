@@ -458,7 +458,7 @@ int GLScene::winMsg(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         setCreditPage();
         gameActive = false;
     }
-    if((wParam == 'p' || wParam == 'P') && gameActive == true){
+    if((wParam == 'p' || wParam == 'P') && gameActive == true){   //Key P => Pause Page
         setQuitPage();
         gameActive = false;
     }
