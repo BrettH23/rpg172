@@ -72,11 +72,18 @@ void drawSquare(float x, float y, float s){
 
 int GLScene::drawScene()
 {
+
+            if(gameActive){
+        drawGame();
+    }else{
+        drawMenu();
+    }
+    /*
     drawGame();
     if(!gameActive){
         drawMenu();
     }
-
+    */
 }
 
 void GLScene::drawGame()
@@ -281,6 +288,12 @@ void GLScene::drawMenu()
             hPage->drawPage(screenHeight,screenHeight);
             //glPopMatrix();
         }
+        if(CREDITPAGE){
+            cPage->drawPage(screenHeight,screenHeight);
+        }
+        if(QUIT){
+            qPage->drawPage(screenHeight/2,screenHeight/2);
+        }
         glColor4f(1.0,1.0,1.0, 1.0);
     glPopMatrix();
 }
@@ -304,11 +317,13 @@ int GLScene::GLinit()
     ply->playerInit("SPRITES/player.png");
     ply->setSize(0.03, 0.0419);
 
-    lPage->pageInit("images/landingPage1.png");//image landing page
-    mPage->pageInit("images/menuPage1.png");//image Menu page
-    hPage->pageInit("images/helpPage1.png");//image Help page
+    lPage->pageInit("images/menuTitle.png");//image landing page
+    mPage->pageInit("images/menuPage4.png");//image Menu page
+    hPage->pageInit("images/helpPage2.png");//image Help page
+    qPage->pageInit("images/pausePage2.png"); //image Pause Page
+    cPage->pageInit("images/creditsPage.png"); //image Credit Page
 
-    snds->playMusic("sounds/gameSound.mp3");
+    snds->playMusic("sounds/gamePlay.mp3");
 
     //eBullets->tLoad->loadTexture("images/bullets/bullet1.png", eBullets->bulletType[0].tex);
     eBullets->texInit();
@@ -435,10 +450,30 @@ int GLScene::winMsg(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         setHelpPage();
         gameActive = false;
     }
-    if(wParam == 'r' || wParam == 'R'){
+    if(wParam == 'b' || wParam == 'B'){
         setMenuPage();
         gameActive = false;
     }
+    if(wParam == 'c' || wParam == 'C'){
+        setCreditPage();
+        gameActive = false;
+    }
+    if((wParam == 'p' || wParam == 'P') && gameActive == true){   //Key P => Pause Page
+        setQuitPage();
+        gameActive = false;
+    }
+    if((wParam == 'r' || wParam == 'R') && QUIT == true){
+        setGamePage();
+        gameActive = true;
+    }
+    if((wParam == 'M' || wParam == 'm') && QUIT == true){
+        setMenuPage();
+        gameActive = false;
+    }
+        if((wParam == 'M' || wParam == 'm') && gameActive == true){
+
+    }
+
 
 }
 
