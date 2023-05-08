@@ -10,6 +10,8 @@
 #include <checkcollision.h>
 #include <bulletpool.h>
 #include <sound.h>
+#include <font.h>
+#include <level.h>
 
 #include "time.h"
 
@@ -21,6 +23,9 @@ player *ply = new player();
 checkCollision *hit = new checkCollision();
 bulletpool *eBullets = new bulletpool();
 sound *snds = new sound();
+font *text = new font();
+level *lv = new level();
+
 
 enemy ens[5];
 
@@ -88,33 +93,32 @@ int GLScene::drawScene()
 
 void GLScene::drawGame()
 {
-    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-    glDisable(GL_DEPTH_TEST);   //removed since using glortho
-    glEnable (GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    //glLoadIdentity();
-
-    //glColor3f(0.2,0.7,0.7); //R G B (epic)
 
     int coordY = screenHeight-int((0.5-ply->position.y) * float(screenHeight))-1;
     int coordX = int((0.5+ply->position.x) * float(screenHeight)) + (screenWidth - screenHeight)/2;
     //*
-    double x = double(clock()-timer)/double(CLOCKS_PER_SEC);
-    if(x >= 0.025 && gameActive){
+    double timePassed = double(clock()-timer)/double(CLOCKS_PER_SEC);
+    if(timePassed >= 0.016 && gameActive){
         timer = clock();
-        //std::cout << int(clock()-timer) << ", " << x << std::endl;
+        std::cout << int(clock()-timer) << ", " << timePassed << std::endl;
         prLX->scroll(true, "y", 0.002); //autoscroll
-        waves->scroll(true, "y", 0.0008+0.002*sin(PI*float(bulletCycle)/100));
+        waves->scroll(true, "y", 0.001+0.0008*sin(PI*float(bulletCycle)/200));
         //ply->moveP();   //allows player to move, would be in idle if we had one
         ply->follow(mouseX, mouseY, bulletCycle);
-        eBullets->fire(bulletCycle); //std::cout << jz << std::endl;
-        eBullets->aimed(bulletCycle, vec2{ply->position.x, ply->position.y});
+        eBullets->fire(0, bulletCycle, vec2{ply->position.x, ply->position.y}); //std::cout << jz << std::endl;
+        eBullets->fire(1, bulletCycle, vec2{ply->position.x, ply->position.y});
         bulletCycle++;
-        if(bulletCycle >= 100){ //cycles based on 5 second intervals
+        if(bulletCycle >= 200){ //cycles based on 3 second intervals
             bulletCycle = 0;
         }
         eBullets->tick();
     }
+
+    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+    glDisable(GL_DEPTH_TEST);   //removed since using glortho
+    glEnable (GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 
 
     glPushMatrix();
@@ -151,13 +155,18 @@ void GLScene::drawGame()
 
         glPushMatrix();
 
-            //glScalef(3.33,3.33,1.0);
-
-
             prLX->drawSquare(screenHeight*(1.5),screenHeight);  //constrained to 3/4 ratio to emulate certain bullet hell games, parallax is scaled to be height of 1.0
 
+        glPopMatrix();
 
+        glPushMatrix();
 
+            glColor4f(1.0,1.0,1.0, 0.4);
+
+            waves->drawSquare(screenHeight*(1.5),screenHeight);
+
+            //drawSquare();
+            glColor4f(1.0,1.0,1.0, 1.0);
         glPopMatrix();
 
         glPushMatrix();
@@ -223,16 +232,6 @@ void GLScene::drawGame()
         glPopMatrix();
 
         glPushMatrix();
-
-            glColor4f(1.0,1.0,1.0, 0.4);
-
-            waves->drawSquare(screenHeight*(1.5),screenHeight);
-
-            //drawSquare();
-            glColor4f(1.0,1.0,1.0, 1.0);
-        glPopMatrix();
-
-        glPushMatrix();
             glDisable(GL_TEXTURE_2D);
             glColor3f(0.0, 0.0, 0.0);
 
@@ -241,6 +240,11 @@ void GLScene::drawGame()
 
             glColor3f(1.0, 1.0, 1.0);
             glEnable(GL_TEXTURE_2D);
+        glPopMatrix();
+
+        glPushMatrix();
+            text->drawLine("haha", 0.5,0.0);
+            text->drawLine("yeah", 0.5,-0.1);
         glPopMatrix();
 
         glPushMatrix();
@@ -312,9 +316,9 @@ int GLScene::GLinit()
     glEnable(GL_TEXTURE_2D);
 
     //myFirstModel->modelInit("images/flower.jpg");
-    prLX->initParallax("SPRITES/wavebg.png");
-    waves->initParallax("SPRITES/waveoverlay.png");
-    ply->playerInit("SPRITES/player.png");
+    prLX->initParallax("images/sprites/wavebg.png");
+    waves->initParallax("images/sprites/waveoverlay.png");
+    ply->playerInit("images/sprites/player.png");
     ply->setSize(0.03, 0.0419);
 
     lPage->pageInit("images/menuTitle.png");//image landing page
@@ -328,7 +332,7 @@ int GLScene::GLinit()
     //eBullets->tLoad->loadTexture("images/bullets/bullet1.png", eBullets->bulletType[0].tex);
     eBullets->texInit();
 
-    ens[0].enemyTexture("SPRITES/piranha.png");
+    ens[0].enemyTexture("images/sprites/piranha.png");
 
     for(int i = 0;i<5;i++){
         ens[i].initEnemy(ens[0].tex, 1.0, 1.0);
@@ -339,6 +343,9 @@ int GLScene::GLinit()
     glGenTextures(1, &tempTex);
 
     //KbMs->mdl = myFirstModel;   //copy model to mdl
+
+    text->initFonts("images/jokerman.png");
+    text->kerning = -0.02;
 
     timer = clock();
 

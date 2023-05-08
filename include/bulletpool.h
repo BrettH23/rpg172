@@ -36,7 +36,7 @@ class bulletpool
         virtual ~bulletpool();
 
         int cap;
-        float degree;
+        float fireAngle;
 
         enum type_p {PLAYER, ENEMY};
         type_p poolType;
@@ -62,7 +62,8 @@ class bulletpool
         void tick();
         bool checkBounds(int, int);
 
-        void fire(int);
+        void fire(int, int, vec2);
+        void doomSpiral(int);
         void aimed(int, vec2);
 
         textureLoader *tLoad = new textureLoader();

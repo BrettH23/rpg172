@@ -27,7 +27,7 @@ class actor
         vec2 speed;
         float bulletSpeed;
 
-        enum acts{IDLE, WALKL, WALKR, JUMP, ATTACK, DIE};
+        enum acts{IDLE, WALKL, WALKR, JUMP, ATTACK, DIE, DEAD};
         acts actionTrigger;
 
         //float runSpeed;

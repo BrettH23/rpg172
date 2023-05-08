@@ -24,7 +24,7 @@
 1682540569 source:c:\users\ae\repos\rpg172\src\actor.cpp
 	"actor.h"
 
-1682540547 c:\users\ae\repos\rpg172\include\actor.h
+1683563955 c:\users\ae\repos\rpg172\include\actor.h
 	<GL/gl.h>
 	<textureloader.h>
 	<commons.h>
@@ -62,7 +62,7 @@
 1675732720 c:\users\ae\repos\rpg172\include\gllight.h
 	<glscene.h>
 
-1682554141 source:c:\users\ae\repos\rpg172\src\glscene.cpp
+1683564583 source:c:\users\ae\repos\rpg172\src\glscene.cpp
 	"glscene.h"
 	<gllight.h>
 	<model.h>
@@ -74,6 +74,8 @@
 	<checkcollision.h>
 	<bulletpool.h>
 	<sound.h>
+	<font.h>
+	<level.h>
 	"time.h"
 
 1677117482 c:\users\ae\repos\rpg172\include\model.h
@@ -116,16 +118,16 @@
 1682550222 source:c:\users\ae\repos\rpg172\src\parallax.cpp
 	"parallax.h"
 
-1682541559 source:c:\users\ae\repos\rpg172\src\player.cpp
+1683563955 source:c:\users\ae\repos\rpg172\src\player.cpp
 	"player.h"
 
 1682539141 source:c:\users\ae\repos\rpg172\src\textureloader.cpp
 	"textureloader.h"
 
-1682553255 source:c:\users\ae\repos\rpg172\src\bulletpool.cpp
+1683563955 source:c:\users\ae\repos\rpg172\src\bulletpool.cpp
 	"bulletpool.h"
 
-1682543953 c:\users\ae\repos\rpg172\include\bulletpool.h
+1683563955 c:\users\ae\repos\rpg172\include\bulletpool.h
 	<GL/gl.h>
 	"textureloader.h"
 	"commons.h"
@@ -234,4 +236,18 @@
 
 1682539141 source:c:\users\ae\repos\rpg172\src\sound.cpp
 	"sound.h"
+
+1683227119 c:\users\ae\repos\rpg172\include\font.h
+	"commons.h"
+	"textureloader.h"
+	"stdio.h"
+	"string.h"
+
+1683225557 source:c:\users\ae\repos\rpg172\src\level.cpp
+	"level.h"
+
+1683235008 c:\users\ae\repos\rpg172\include\level.h
+
+1683227134 source:c:\users\ae\repos\rpg172\src\font.cpp
+	"font.h"
 

@@ -17,11 +17,12 @@ bulletpool::bulletpool()
         }
         dead = temp;
     }
+    fireAngle = 0.0;
 
     bounds[0] = vec2{(0.5*(3.0/4.0)), 0.5};
     bounds[1] = vec2{(-0.5*(3.0/4.0)), -0.5};
 
-    bulletType[0].radius = 0.014;
+    bulletType[0].radius = 0.021;
     bulletType[0].alive = nullptr;
 
     bulletType[1].radius = 0.008;
@@ -30,10 +31,10 @@ bulletpool::bulletpool()
 
 void bulletpool::texInit()
 {
-    tLoad->loadTexture("SPRITES/bullets/tentacleBullet.png", bulletType[0].tex);
-    tLoad->loadTexture("SPRITES/bullets/tentacleBullet.png", bulletType[0].mask);
-    tLoad->loadTexture("SPRITES/bullets/crabBullet.png", bulletType[1].tex);
-    tLoad->loadTexture("SPRITES/bullets/crabBullet.png", bulletType[1].mask);
+    tLoad->loadTexture("images/sprites/bullets/tentacleBullet.png", bulletType[0].tex);
+    tLoad->loadTexture("images/sprites/bullets/tentacleBullet.png", bulletType[0].mask);
+    tLoad->loadTexture("images/sprites/bullets/crabBullet.png", bulletType[1].tex);
+    tLoad->loadTexture("images/sprites/bullets/crabBullet.png", bulletType[1].mask);
 }
 
 
@@ -170,6 +171,10 @@ bool bulletpool::checkBounds(int index, int thisType)
 
 void bulletpool::tick()
 {
+    fireAngle += 0.025*PI;
+    if(fireAngle >= 2*PI){
+        fireAngle -= 2*PI;
+    }
     for(int i = 0;i < typeCount; i++){
         dll* temp = bulletType[i].alive;
         while(temp!= nullptr){
@@ -214,22 +219,51 @@ void bulletpool::tick()
         }
     }
 }
-float fireAngle = 0.0;
-void bulletpool::fire(int cycle)
+
+void bulletpool::fire(int type, int cycle, vec2 ply)
 {
-    vec2 p = vec2{0.2,0.1};
-    //vec2 v = vec2{0,0};
-    //vec2 a = vec2{0,0};
-    spawn(0, 1000, -0.0021, 0.0000, fireAngle, 0.0, p);
-    spawn(0, 1000, -0.0021, 0.0000, fireAngle + PI, 0.0, p);
-    fireAngle += 0.088*PI;
-    if(fireAngle >= 2*PI){
-        fireAngle -= 2*PI;
+    switch(type){
+    case 0:
+        doomSpiral(cycle);
+        break;
+    case 1:
+        aimed(cycle, ply);
+        break;
+
     }
+
 }
+float doomMod = 1.0;
+void bulletpool::doomSpiral(int cycle)
+{
+    if((5+cycle)%5 == 0){
+        vec2 p = vec2{0.2,0.1};
+        //vec2 v = vec2{0,0};
+        //vec2 a = vec2{0,0};
+        float cycleIterator = 0.0;
+        for(int i = 0;i < 5; i++){
+            spawn(0, 1000, -0.0015, 0.0000, float(doomMod)*fireAngle + cycleIterator, 0.0, p);
+            cycleIterator+= PI*0.4;
+        }
+
+
+    }
+
+
+
+
+    if (cycle == 199){
+        doomMod = -doomMod;
+    }
+
+    //spawn(0, 1000, -0.0015, 0.0000, fireAngle + PI, 0.0, p);
+
+}
+
+
 void bulletpool::aimed(int cycle, vec2 ply)
 {
-    if(cycle > 20 && cycle <= 30 ){
+    if(cycle > 20 && cycle <= 40 ){
         vec2 p = vec2{-0.2, 0.1};
         float theta = PI + atan((ply.x - p.x)/ (ply.y - p.y));
         if(p.y > ply.y){
@@ -237,10 +271,10 @@ void bulletpool::aimed(int cycle, vec2 ply)
         }
         for(int i = 0; i < 20; i++){
             float rand1 = (2*float(rand())/float(RAND_MAX) - 1)*0.18;
-            float rand2 = (2*float(rand())/float(RAND_MAX) - 1)*0.003;
+            float rand2 = (2*float(rand())/float(RAND_MAX) - 1)*0.0015;
             //int rand3 = rand()%4;
             //if(rand3 > 1) rand3 = 1;
-            spawn(1, 1000, -0.004+ rand2, -0.0001, theta + rand1, 0.2, p);
+            spawn(1, 1000, -0.002+ rand2, -0.00008, theta + rand1, 0.15, p);
         }
 
     }

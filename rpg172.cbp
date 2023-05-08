@@ -49,9 +49,11 @@
 		<Unit filename="include/checkcollision.h" />
 		<Unit filename="include/commons.h" />
 		<Unit filename="include/enemy.h" />
+		<Unit filename="include/font.h" />
 		<Unit filename="include/gllight.h" />
 		<Unit filename="include/glscene.h" />
 		<Unit filename="include/inputs.h" />
+		<Unit filename="include/level.h" />
 		<Unit filename="include/menu.h" />
 		<Unit filename="include/model.h" />
 		<Unit filename="include/parallax.h" />
@@ -65,9 +67,11 @@
 		<Unit filename="src/bulletpool.cpp" />
 		<Unit filename="src/checkcollision.cpp" />
 		<Unit filename="src/enemy.cpp" />
+		<Unit filename="src/font.cpp" />
 		<Unit filename="src/gllight.cpp" />
 		<Unit filename="src/glscene.cpp" />
 		<Unit filename="src/inputs.cpp" />
+		<Unit filename="src/level.cpp" />
 		<Unit filename="src/menu.cpp" />
 		<Unit filename="src/model.cpp" />
 		<Unit filename="src/parallax.cpp" />

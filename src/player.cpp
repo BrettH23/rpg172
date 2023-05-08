@@ -189,7 +189,7 @@ void player::follow(float xM, float yM, int cycle)
     float adjX = (x1*topSpeed)/fRatio;
     float adjY = (y1*topSpeed)/fRatio;
 
-    if(cycle % 3 == 0){
+    if(cycle % 4 == 0){
         this->actions(WALKR);
     }
 
