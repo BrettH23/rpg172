@@ -51,12 +51,16 @@ void bulletpool::draw()
         dll* temp = bulletType[i].alive;
         while(temp!= nullptr){
             int index = temp->index;
+            if(bullets[index].ticks < 30){
+                glColor4f(1.0,1.0,1.0,float(bullets[index].ticks)/30.0);
+            }
             glBegin(GL_QUADS);
                 glTexCoord2f(0.0,1.0);glVertex2f(bullets[index].verts[0].x,bullets[index].verts[0].y);
                 glTexCoord2f(1.0,1.0);glVertex2f(bullets[index].verts[1].x,bullets[index].verts[1].y);
                 glTexCoord2f(1.0,0.0);glVertex2f(bullets[index].verts[2].x,bullets[index].verts[2].y);
                 glTexCoord2f(0.0,0.0);glVertex2f(bullets[index].verts[3].x,bullets[index].verts[3].y);
             glEnd();
+            glColor4f(1.0,1.0,1.0,1.0);
             temp = temp->next;
         }
     }
@@ -208,7 +212,7 @@ void bulletpool::tick()
             }
             bullets[temp->index].ticks--;
             //bullets[temp->index].ticks <= 0
-            if(!checkBounds(temp->index, i)){
+            if(bullets[temp->index].ticks<=0 || !checkBounds(temp->index, i)){
                 dll* temp2 = temp;
                 temp = temp->next;
                 die(temp2);
@@ -242,7 +246,7 @@ void bulletpool::doomSpiral(int cycle)
         //vec2 a = vec2{0,0};
         float cycleIterator = 0.0;
         for(int i = 0;i < 5; i++){
-            spawn(0, 1000, -0.0015, 0.0000, float(doomMod)*fireAngle + cycleIterator, 0.0, p);
+            spawn(0, 60, -0.0015, 0.0000, float(doomMod)*fireAngle + cycleIterator, 0.0, p);
             cycleIterator+= PI*0.4;
         }
 

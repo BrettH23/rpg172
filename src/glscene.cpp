@@ -27,12 +27,11 @@ font *text = new font();
 level *lv = new level();
 
 
-enemy ens[5];
+
 
 clock_t timer;
 
 GLuint tempTex;
-GLuint bulletTex;
 
 bool gameActive = false;
 
@@ -100,7 +99,7 @@ void GLScene::drawGame()
     double timePassed = double(clock()-timer)/double(CLOCKS_PER_SEC);
     if(timePassed >= 0.016 && gameActive){
         timer = clock();
-        std::cout << int(clock()-timer) << ", " << timePassed << std::endl;
+        //std::cout << int(clock()-timer) << ", " << timePassed << std::endl;
         prLX->scroll(true, "y", 0.002); //autoscroll
         waves->scroll(true, "y", 0.001+0.0008*sin(PI*float(bulletCycle)/200));
         //ply->moveP();   //allows player to move, would be in idle if we had one
@@ -170,6 +169,10 @@ void GLScene::drawGame()
         glPopMatrix();
 
         glPushMatrix();
+            lv->drawEnemies();
+        glPopMatrix();
+
+        glPushMatrix();
 
             ply->draw();
 
@@ -204,22 +207,8 @@ void GLScene::drawGame()
         glPopMatrix();
 
 
-        //*
-        glPushMatrix();
 
 
-        for(int i = 0;i<5;i++){
-
-            if(ens[i].position.x < -0.3){   //constrains enemies
-                ens[i].actionTrigger = ens[i].WALKR;
-            }else if(ens[i].position.x > 0.3){
-                ens[i].actionTrigger = ens[i].WALKL;
-            }
-
-            ens[i].actions();
-            ens[i].draw();
-        }
-        glPopMatrix();
 
         glPushMatrix();
 
@@ -332,20 +321,16 @@ int GLScene::GLinit()
     //eBullets->tLoad->loadTexture("images/bullets/bullet1.png", eBullets->bulletType[0].tex);
     eBullets->texInit();
 
-    ens[0].enemyTexture("images/sprites/piranha.png");
-
-    for(int i = 0;i<5;i++){
-        ens[i].initEnemy(ens[0].tex, 1.0, 1.0);
-        ens[i].placeEnemy(vec3{((float)rand()/(float)(RAND_MAX))*0.5-0.25f, 0.2f, 0.0f});
-        float randomSize = float(float(10+rand()%20)/300.0);
-        ens[i].setSize(randomSize, randomSize);
-    }
-    glGenTextures(1, &tempTex);
 
     //KbMs->mdl = myFirstModel;   //copy model to mdl
 
     text->initFonts("images/jokerman.png");
     text->kerning = -0.02;
+
+    lv->init();
+    lv->loadLevel(0);
+
+    glGenTextures(1, &tempTex);
 
     timer = clock();
 

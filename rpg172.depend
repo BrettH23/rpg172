@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1680543854 source:c:\users\ae\repos\rpg172\main.cpp
+1683577937 source:c:\users\ae\repos\rpg172\main.cpp
 	<windows.h>
 	<string.h>
 	<stdlib.h>
@@ -21,7 +21,7 @@
 	<GL/gl.h>
 	<GL/glu.h>
 
-1682540569 source:c:\users\ae\repos\rpg172\src\actor.cpp
+1683578446 source:c:\users\ae\repos\rpg172\src\actor.cpp
 	"actor.h"
 
 1683563955 c:\users\ae\repos\rpg172\include\actor.h
@@ -62,7 +62,7 @@
 1675732720 c:\users\ae\repos\rpg172\include\gllight.h
 	<glscene.h>
 
-1683564583 source:c:\users\ae\repos\rpg172\src\glscene.cpp
+1683578846 source:c:\users\ae\repos\rpg172\src\glscene.cpp
 	"glscene.h"
 	<gllight.h>
 	<model.h>
@@ -124,7 +124,7 @@
 1682539141 source:c:\users\ae\repos\rpg172\src\textureloader.cpp
 	"textureloader.h"
 
-1683563955 source:c:\users\ae\repos\rpg172\src\bulletpool.cpp
+1683566739 source:c:\users\ae\repos\rpg172\src\bulletpool.cpp
 	"bulletpool.h"
 
 1683563955 c:\users\ae\repos\rpg172\include\bulletpool.h
@@ -243,11 +243,19 @@
 	"stdio.h"
 	"string.h"
 
-1683225557 source:c:\users\ae\repos\rpg172\src\level.cpp
+1683578408 source:c:\users\ae\repos\rpg172\src\level.cpp
 	"level.h"
 
-1683235008 c:\users\ae\repos\rpg172\include\level.h
+1683577395 c:\users\ae\repos\rpg172\include\level.h
+	"commons.h"
+	"enemy.h"
+	"player.h"
+	"bulletpool.h"
+	"textureloader.h"
 
 1683227134 source:c:\users\ae\repos\rpg172\src\font.cpp
 	"font.h"
+
+1683575095 c:\users\ae\repos\rpg172\include\levelinfo.h
+	"commons.h"
 

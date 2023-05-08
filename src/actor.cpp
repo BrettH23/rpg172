@@ -48,10 +48,6 @@ void actor::draw()
 
 void actor::texInit(char* filename)
 {
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-
-
 
 
     tLoad->loadTexture(filename, tex);
