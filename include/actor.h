@@ -23,6 +23,10 @@ class actor
         vec3 verts[4];
         vec3 position;
         float sizeRadius;
+        float theta;
+
+        float maxHP;
+        float HP;
 
         vec2 speed;
         float bulletSpeed;
@@ -48,9 +52,7 @@ class actor
 
 
 
-
         GLuint tex;
-        GLuint bulletTex;
         textureLoader *tLoad = new textureLoader();
 
         frame* animations;

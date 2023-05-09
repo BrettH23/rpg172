@@ -24,12 +24,13 @@ class player : public actor
         void playerInit(char*);
         void actions(acts);
         void moveP();
-        void follow(float, float, int);
-
+        void follow(float, float);
 
         bool direction;
         bool dUp, dDown, dRight, dLeft, firing;
         char playerDir; //determine direction including up and down
+
+        int frameLimiter;
 
         /*
         void doBullet();

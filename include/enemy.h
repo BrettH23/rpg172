@@ -26,7 +26,8 @@ class enemy: public actor
 
         clock_t startTime;
 
-        float theta, velocity, t;//t is projectile time
+        float velocity;
+        int type;
 
 
         char direction; //determine direction including up and down

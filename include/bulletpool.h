@@ -32,7 +32,7 @@ typedef struct type_b{
 class bulletpool
 {
     public:
-        bulletpool();
+        bulletpool(int);
         virtual ~bulletpool();
 
         int cap;
@@ -59,12 +59,13 @@ class bulletpool
 
         void spawn(int, int, float, float, float, float, vec2);
         void die(dll*);
+        void clearAll();
         void tick();
         bool checkBounds(int, int);
 
-        void fire(int, int, vec2);
-        void doomSpiral(int);
-        void aimed(int, vec2);
+        void fire(int, int, vec2, vec2);
+        void doomSpiral(int, vec2);
+        void aimed(int, vec2, vec2);
 
         textureLoader *tLoad = new textureLoader();
 

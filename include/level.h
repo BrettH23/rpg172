@@ -27,24 +27,27 @@ class level
         level();
         virtual ~level();
 
-        void init();
+        void init(player*, bulletpool*, bulletpool*);
         void initLevel(int, levelData&);
         void buildLevels();
         void loadLevel(int);
         void tickLevel();
         void drawEnemies();
+        void drawEnemyMasks();
         int endLevel();
 
         bool levelLive;
         int currentLevel;
         int maxEnemies;
         int totalLevels;
+        int bulletCycle;
 
 
         levelData *levelList;
 
         enemy *enemies;
         behaviorType *eData;
+        float tOffset;
 
         player *ply;
         bulletpool *eBullets;
@@ -52,6 +55,8 @@ class level
 
         GLuint* eTextures;
         vec2* eScales;
+        float* eMaxHP;
+        int eTypes;
 
         textureLoader *tLoad = new textureLoader();
 

@@ -15,6 +15,7 @@ actor::actor()
 
     actionTrigger = IDLE;
 
+
 }
 
 actor::~actor()   //destructor for player, needs to clear those animations
@@ -29,6 +30,7 @@ void actor::draw()
     glPushMatrix();
     glBindTexture(GL_TEXTURE_2D,tex);
     glTranslated(position.x,position.y,position.z);
+    glRotatef(theta, 0.0, 0.0, 1.0);
     glBegin(GL_QUADS);
 
         glTexCoord2f(xMin,yMax);

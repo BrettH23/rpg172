@@ -21,7 +21,8 @@ parallax *prLX = new parallax();
 parallax *waves = new parallax();
 player *ply = new player();
 checkCollision *hit = new checkCollision();
-bulletpool *eBullets = new bulletpool();
+bulletpool *eBullets = new bulletpool(1000);
+bulletpool *pBullets = new bulletpool(100);
 sound *snds = new sound();
 font *text = new font();
 level *lv = new level();
@@ -40,7 +41,7 @@ GLubyte* collider = new GLubyte[1];
 float mouseX = 0.0;
 float mouseY = 0.0;
 
-int bulletCycle = 0;
+float waveCycle = 0.0;
 
 GLScene::GLScene()
 {
@@ -101,22 +102,24 @@ void GLScene::drawGame()
         timer = clock();
         //std::cout << int(clock()-timer) << ", " << timePassed << std::endl;
         prLX->scroll(true, "y", 0.002); //autoscroll
-        waves->scroll(true, "y", 0.001+0.0008*sin(PI*float(bulletCycle)/200));
+        waves->scroll(true, "y", 0.001+0.0008*sin(waveCycle));
         //ply->moveP();   //allows player to move, would be in idle if we had one
-        ply->follow(mouseX, mouseY, bulletCycle);
-        eBullets->fire(0, bulletCycle, vec2{ply->position.x, ply->position.y}); //std::cout << jz << std::endl;
-        eBullets->fire(1, bulletCycle, vec2{ply->position.x, ply->position.y});
-        bulletCycle++;
-        if(bulletCycle >= 200){ //cycles based on 3 second intervals
-            bulletCycle = 0;
+        if(int(collider[0]) < 25){
+            //std::cout << int(collider[0]) << std::endl;
         }
+        ply->follow(mouseX, mouseY);
+        waveCycle+= 0.02;
+        if(waveCycle >= 2*PI){ //cycles based on 3 second intervals
+            waveCycle -= 2*PI;
+        }
+        lv->tickLevel();
         eBullets->tick();
     }
 
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-    glDisable(GL_DEPTH_TEST);   //removed since using glortho
-    glEnable (GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    //glDisable(GL_DEPTH_TEST);   //removed since using glortho
+    //glEnable (GL_BLEND);
+    //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 
 
@@ -137,13 +140,14 @@ void GLScene::drawGame()
             //drawSquare();
             //glColor3f(1.0,1.0,1.0);
             eBullets->drawMasks(vec2{ply->position.x, ply->position.y});
+            lv->drawEnemyMasks();
 
             glBindTexture(GL_TEXTURE_2D, tempTex);
             glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, coordX, coordY, 1, 1,  0);
             glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
             glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-            glGetTexImage(GL_TEXTURE_2D, 0, GL_RED, GL_UNSIGNED_BYTE, collider);
+            glGetTexImage(GL_TEXTURE_2D, 0, GL_BLUE, GL_UNSIGNED_BYTE, collider);
             //std::cout << int(collider[0]) << std::endl;
 
         glPopMatrix();
@@ -222,23 +226,23 @@ void GLScene::drawGame()
 
         glPushMatrix();
             glDisable(GL_TEXTURE_2D);
-            glColor3f(0.0, 0.0, 0.0);
+            glColor3f(0.5, 0.5, 0.5);
 
-            drawSquare((7.0/8.0), 0.0, 0.5);
-            drawSquare((-7.0/8.0), 0.0, 0.5);
+            drawSquare(1.0, 0.0, 0.5);
+            drawSquare(-1.0, 0.0, 0.5);
 
             glColor3f(1.0, 1.0, 1.0);
             glEnable(GL_TEXTURE_2D);
         glPopMatrix();
 
         glPushMatrix();
-            text->drawLine("haha", 0.5,0.0);
-            text->drawLine("yeah", 0.5,-0.1);
+            text->drawLine("haha", 0.6,0.0);
+            text->drawLine("yeah", 0.6,-0.1);
         glPopMatrix();
 
         glPushMatrix();
-            glBindTexture(GL_TEXTURE_2D, tempTex);
-            drawSquare(0.5, 0.3, 0.06);
+            //glBindTexture(GL_TEXTURE_2D, tempTex);
+            //drawSquare(0.5, 0.3, 0.06);
         glPopMatrix();
 
 
@@ -295,7 +299,7 @@ void GLScene::drawMenu()
 int GLScene::GLinit()
 {
     glClearDepth(1.0f);
-    glClearColor(0.0f,0.0f,0.0f,0.0f);
+    glClearColor(0.0f,0.0f,1.0f,0.0f);
 
     glEnable(GL_LIGHT0);
     glEnable(GL_LIGHTING);
@@ -327,8 +331,8 @@ int GLScene::GLinit()
     text->initFonts("images/jokerman.png");
     text->kerning = -0.02;
 
-    lv->init();
-    lv->loadLevel(0);
+    lv->init(ply, eBullets, pBullets);
+    lv->loadLevel(1);
 
     glGenTextures(1, &tempTex);
 
@@ -431,6 +435,12 @@ int GLScene::winMsg(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         }
     }
     */
+    if(wParam == '1'){
+        lv->loadLevel(1);
+    }
+    if(wParam == '0'){
+        lv->loadLevel(0);
+    }
     if(wParam == 's' || wParam == 'S'){
         setMenuPage();
         gameActive = false;
