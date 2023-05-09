@@ -36,7 +36,7 @@ void level::init(player *p, bulletpool *eB, bulletpool *pB)
     eMaxHP[1] = 60.0;
     eMaxHP[2] = 80.0;
     eMaxHP[3] = 150.0;
-    eMaxHP[04] = 60.0;
+    eMaxHP[4] = 60.0;
 
 
     levelList = new levelData[totalLevels];
@@ -69,9 +69,9 @@ void level::buildLevels()
 
     behaviorType b1[] = {STILL, ZAG, ORBIT, ORBIT};
     int e1[] = {0,1,4,3};
-    float t1[] = {0.0, PI, PI, 0.0};
+    float t1[] = {0.0, PI, 0.5, 0.0};
     vec2 o1[] = {vec2{0.0,0.0},  vec2{-0.1,0.1},   vec2{0.0,0.1},   vec2{0.1,0.1}};
-    vec2 m1[] = {vec2{0.0,0.0},  vec2{0.2,0.1},  vec2{0.2,0.2},  vec2{0.15,-0.15}};
+    vec2 m1[] = {vec2{0.0,0.0},  vec2{0.2,0.1},  vec2{0.2,0.2},  vec2{0.15,0.15}};
 
     for(int i = 0; i < 4; i++){
         levelList[0].behs[i] = b1[i];
@@ -80,6 +80,7 @@ void level::buildLevels()
         levelList[0].origins[i] = o1[i];
         levelList[0].mods[i] = m1[i];
     }
+
 
     initLevel(5, levelList[1]);
 
@@ -140,12 +141,15 @@ void level::loadLevel(int lC)
             enemies[i].position = {l->origins[i].x, l->origins[i].y, 0.0};
             enemies[i].type = l->eTypes[i];
             enemies[i].HP = enemies[i].maxHP = eMaxHP[enemies[i].type];
+            enemies[i].actionTrigger = enemies[i].IDLE;
         }else{
             eData[i] = INACTIVE;
         }
     }
 
     ply->position = vec3{0.0, -0.15, 0.0};
+    ply->actions(ply->WALKR);
+    ply->HP = ply->maxHP;
 
 }
 
@@ -156,8 +160,12 @@ void level::tickLevel()
         tOffset -= 2*PI;
     }
     levelData *l = &levelList[currentLevel];
+    if(ply->firing){
+        pBullets->playerFire(bulletCycle, vec2{ply->position.x, ply->position.y + ply->sizeRadius.y});
+    }
     for(int i = 0; i < maxEnemies; i++){
-        if(i < l->eCount && eData[i] != INACTIVE){
+        if(i < l->eCount && eData[i] != INACTIVE &&enemies[i].actionTrigger != enemies[i].DEAD){
+
             float updatedX = l->origins[i].x;
             float updatedY = l->origins[i].y;
             float tempX = enemies[i].position.x;
@@ -165,25 +173,29 @@ void level::tickLevel()
             case ZAG:
                 updatedX = l->mods[i].x * (sin(tOffset + l->thetas[i]))  + l->origins[i].x;
                 updatedY = l->mods[i].y * (sin(tOffset + l->thetas[i]))  + l->origins[i].y;
-                if(updatedX > tempX){
-                    enemies[i].actionTrigger = enemies[i].WALKL;
-                }else{
-                    enemies[i].actionTrigger = enemies[i].WALKR;
-                }
                 break;
             case ORBIT:
                 updatedX = l->mods[i].x * (sin(tOffset + l->thetas[i]) + l->origins[i].x);
                 updatedY = l->mods[i].y * (cos(tOffset + l->thetas[i]) + l->origins[i].y);
                 bool modifyOffset =  0.0 > l->mods[i].x * l->mods[i].y;
-                enemies[i].theta = float(2 * int(modifyOffset) - 1) * tOffset *180.0/ PI;
+                //enemies[i].theta = float(2 * int(modifyOffset) - 1) * tOffset *180.0/ PI;
                 break;
             }
+            if(updatedX > tempX){
+                enemies[i].actions(enemies[i].WALKL);
+            }else{
+                enemies[i].actions(enemies[i].WALKR);
+            }
             enemies[i].position = {updatedX, updatedY, 0.0};
-
-            enemies[i].actions();
             eBullets->fire(enemies[i].type, bulletCycle, vec2{enemies[i].position.x, enemies[i].position.y}, vec2{ply->position.x, ply->position.y});
+            int total = pBullets->getImpacts(vec2{enemies[i].position.x, enemies[i].position.y}, enemies[i].sizeRadius);
+            if(total > 0.0){
+                enemies[i].hit(float(total) * ply->attack);
+            }
         }
     }
+
+
     bulletCycle++;
     if(bulletCycle >= 200){
         bulletCycle = 0;

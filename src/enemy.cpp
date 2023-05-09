@@ -16,7 +16,7 @@ enemy::enemy()
     speed.x = 0.002*(1+(float(rand()%100)/50.0));
     speed.y = 0.0;
 
-    sizeRadius = 0.5;
+    sizeRadius = vec2{0.5, 0.5};
 
     startTime = clock();
     actionTrigger = WALKL;
@@ -58,9 +58,10 @@ void enemy::initEnemy(GLuint tex, int vFrm, int hFrm)
     this->tex = tex;
 }
 
-void enemy::actions()
+void enemy::actions(acts a)
 {
-    switch(actionTrigger)
+    actionTrigger = a;
+    switch(a)
     {
     case IDLE:
 
@@ -75,5 +76,4 @@ void enemy::actions()
         xMin = 0.0;
     break;
     }
-
 }

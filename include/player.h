@@ -14,10 +14,7 @@ class player : public actor
         virtual ~player();
 
         float topSpeed;
-
-
-        enum acts{IDLE, WALKL, WALKR, JUMP, ATTACK, DIE};
-        acts actionTrigger;
+        float attack;
 
         //float runSpeed;
 
@@ -25,6 +22,7 @@ class player : public actor
         void actions(acts);
         void moveP();
         void follow(float, float);
+        void drawCursor(float, float);
 
         bool direction;
         bool dUp, dDown, dRight, dLeft, firing;

@@ -21,8 +21,8 @@ parallax *prLX = new parallax();
 parallax *waves = new parallax();
 player *ply = new player();
 checkCollision *hit = new checkCollision();
-bulletpool *eBullets = new bulletpool(1000);
-bulletpool *pBullets = new bulletpool(100);
+bulletpool *eBullets = new bulletpool();
+bulletpool *pBullets = new bulletpool();
 sound *snds = new sound();
 font *text = new font();
 level *lv = new level();
@@ -105,7 +105,7 @@ void GLScene::drawGame()
         waves->scroll(true, "y", 0.001+0.0008*sin(waveCycle));
         //ply->moveP();   //allows player to move, would be in idle if we had one
         if(int(collider[0]) < 25){
-            //std::cout << int(collider[0]) << std::endl;
+            ply->hit(1.0);
         }
         ply->follow(mouseX, mouseY);
         waveCycle+= 0.02;
@@ -114,6 +114,7 @@ void GLScene::drawGame()
         }
         lv->tickLevel();
         eBullets->tick();
+        pBullets->tick();
     }
 
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
@@ -179,34 +180,8 @@ void GLScene::drawGame()
         glPushMatrix();
 
             ply->draw();
+            ply->drawCursor(mouseX, mouseY);
 
-            glDisable(GL_TEXTURE_2D);
-            glColor3f(0.0,0.0,0.0);
-            glPointSize(8.0);
-            glBegin(GL_POINTS);
-            glVertex2f(ply->position.x, ply->position.y);
-            glEnd();
-
-            glColor3f(1.0,1.0,1.0);
-            glPointSize(4.0);
-            glBegin(GL_POINTS);
-            glVertex2f(ply->position.x, ply->position.y);
-            glEnd();
-
-            glPointSize(4.0);
-            glBegin(GL_POINTS);
-            glVertex2f(mouseX, mouseY);
-            glEnd();
-
-            glColor4f(1.0,1.0,1.0,0.2);
-            glLineWidth(2.0);
-            glBegin(GL_LINES);
-            glVertex2f(ply->position.x, ply->position.y);
-            glVertex2f(mouseX, mouseY);
-            glEnd();
-            glColor4f(1.0,1.0,1.0,1.0);
-
-            glEnable(GL_TEXTURE_2D);
 
         glPopMatrix();
 
@@ -219,7 +194,7 @@ void GLScene::drawGame()
             //glColor4f(1.0,1.0,1.0, 0.1);
 
             eBullets->draw();
-
+            pBullets->draw();
             //drawSquare();
             //glColor4f(1.0,1.0,1.0, 1.0);
         glPopMatrix();
@@ -295,9 +270,10 @@ void GLScene::drawMenu()
     glPopMatrix();
 }
 
-
+bool initialized = false;
 int GLScene::GLinit()
 {
+
     glClearDepth(1.0f);
     glClearColor(0.0f,0.0f,1.0f,0.0f);
 
@@ -320,10 +296,14 @@ int GLScene::GLinit()
     qPage->pageInit("images/pausePage2.png"); //image Pause Page
     cPage->pageInit("images/creditsPage.png"); //image Credit Page
 
-    snds->playMusic("sounds/gamePlay.mp3");
+
+
+
+
 
     //eBullets->tLoad->loadTexture("images/bullets/bullet1.png", eBullets->bulletType[0].tex);
-    eBullets->texInit();
+    eBullets->initE(1000);
+    pBullets->initP(100);
 
 
     //KbMs->mdl = myFirstModel;   //copy model to mdl
@@ -332,15 +312,17 @@ int GLScene::GLinit()
     text->kerning = -0.02;
 
     lv->init(ply, eBullets, pBullets);
-    lv->loadLevel(1);
+    lv->loadLevel(0);
 
     glGenTextures(1, &tempTex);
 
     timer = clock();
 
-    if(snds->initSounds()){
-        return true;
+    if(snds->initSounds() && !initialized){
+
     }
+    snds->playMusic("sounds/gameSound.mp3");
+    initialized = true;
     return true;
 }
 

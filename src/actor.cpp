@@ -26,7 +26,7 @@ actor::~actor()   //destructor for player, needs to clear those animations
 
 void actor::draw()
 {
-
+    if(actionTrigger == DEAD){ return;}
     glPushMatrix();
     glBindTexture(GL_TEXTURE_2D,tex);
     glTranslated(position.x,position.y,position.z);
@@ -65,5 +65,13 @@ void actor::setSize(float szX, float szY)
     }
     verts[0].x *= -1.0;verts[3].x *= -1.0;
     verts[0].y *= -1.0;verts[1].y *= -1.0;
+    sizeRadius = vec2{szX, szY};
 }
 
+void actor::hit(float dmg)
+{
+    HP -= dmg;
+    if(HP <= 0){
+        actionTrigger = DEAD;
+    }
+}

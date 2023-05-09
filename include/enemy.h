@@ -19,8 +19,10 @@ class enemy: public actor
         void enemyTexture(char*);
         void doBehavior();
 
-        void actions();
+        void actions(acts);
 
+        vec2 hurtBoxA;
+        vec2 hurtBoxB;
 
         vec3 eRotation;      //rotation
 

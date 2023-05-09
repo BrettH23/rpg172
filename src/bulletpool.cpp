@@ -1,7 +1,21 @@
 #include "bulletpool.h"
 
-bulletpool::bulletpool(int c)
+bulletpool::bulletpool()
 {
+
+    bounds[0] = vec2{0.5, 0.5};
+    bounds[1] = vec2{-0.5, -0.5};
+
+}
+
+bulletpool::~bulletpool()
+{
+    //dtor
+}
+
+void bulletpool::initE(int c)
+{
+    poolType = ENEMY;
     cap = c;
     bullets = new bullet[cap];
     typeCount = 2;
@@ -20,8 +34,10 @@ bulletpool::bulletpool(int c)
 
     fireAngle = 0.0;
 
-    bounds[0] = vec2{0.5, 0.5};
-    bounds[1] = vec2{-0.5, -0.5};
+    tLoad->loadTexture("images/sprites/bullets/tentacleBullet.png", bulletType[0].tex);
+    tLoad->loadTexture("images/sprites/bullets/tentacleBullet.png", bulletType[0].mask);
+    tLoad->loadTexture("images/sprites/bullets/crabBullet.png", bulletType[1].tex);
+    tLoad->loadTexture("images/sprites/bullets/crabBullet.png", bulletType[1].mask);
 
     bulletType[0].radius = 0.021;
     bulletType[0].alive = nullptr;
@@ -30,19 +46,36 @@ bulletpool::bulletpool(int c)
     bulletType[1].alive = nullptr;
 }
 
-void bulletpool::texInit()
+void bulletpool::initP(int c)
 {
-    tLoad->loadTexture("images/sprites/bullets/tentacleBullet.png", bulletType[0].tex);
-    tLoad->loadTexture("images/sprites/bullets/tentacleBullet.png", bulletType[0].mask);
-    tLoad->loadTexture("images/sprites/bullets/crabBullet.png", bulletType[1].tex);
-    tLoad->loadTexture("images/sprites/bullets/crabBullet.png", bulletType[1].mask);
+    poolType = PLAYER;
+    cap = c;
+    bullets = new bullet[cap];
+    typeCount = 1;
+    bulletType = new type_b[typeCount];
+    dead = nullptr;
+    for(int i = 0;i < cap;i++){
+        dll* temp = new dll;
+        temp->prev = nullptr;
+        temp->next = dead;
+        temp->index = i;
+        if(dead != nullptr){
+            dead->prev = temp;
+        }
+        dead = temp;
+    }
+
+    fireAngle = 0.0;
+
+    tLoad->loadTexture("images/sprites/bullets/playerBullet.png", bulletType[0].tex);
+    tLoad->loadTexture("images/sprites/bullets/playerBullet.png", bulletType[0].mask);
+
+    bulletType[0].radius = 0.008;
+    bulletType[0].alive = nullptr;
+
 }
 
 
-bulletpool::~bulletpool()
-{
-    //dtor
-}
 void bulletpool::draw()
 {
     glPushMatrix();
@@ -68,7 +101,7 @@ void bulletpool::draw()
     glPopMatrix();
 }
 
-void bulletpool::drawMasks(vec2 ply)
+void bulletpool::drawMasks(vec2 plyPos)
 {
     glPushMatrix();
     glEnable(GL_TEXTURE_2D);
@@ -78,8 +111,8 @@ void bulletpool::drawMasks(vec2 ply)
         dll* temp = bulletType[i].alive;
         while(temp!= nullptr){
             int index = temp->index;
-            float xRange = 0.7*abs(bullets[index].p.x - ply.x);
-            float yRange = 0.7*abs(bullets[index].p.y - ply.y);
+            float xRange = 0.7*abs(bullets[index].p.x - plyPos.x);
+            float yRange = 0.7*abs(bullets[index].p.y - plyPos.y);
             if(xRange < bulletType[i].radius && yRange < bulletType[i].radius){
                 glBegin(GL_QUADS);
                     glTexCoord2f(0.0,1.0);glVertex2f(bullets[index].verts[0].x,bullets[index].verts[0].y);
@@ -139,27 +172,26 @@ void bulletpool::spawn(int type, int life, float vel, float accel, float ang, fl
     }
 }
 
-void bulletpool::die(dll* bIndex)
+void bulletpool::die(int a, dll* bIndex)
 {
     if(bIndex!=nullptr){
-        bool wasFirst = false;
-        for(int i = 0;i < typeCount; i++){
-            if(bIndex == bulletType[i].alive){
-                bulletType[i].alive = bulletType[i].alive->next;
-                if(bulletType[i].alive!=nullptr){
-                    bulletType[i].alive->prev = nullptr;
-                }
-                wasFirst = true;
-            }
+
+        if(bIndex->prev!=nullptr){
+            bIndex->prev->next = bIndex->next;
         }
-        if(!wasFirst){
-            if(bIndex->prev!=nullptr){
-                bIndex->prev->next = bIndex->next;
-            }
-        }
+
         if(bIndex->next!=nullptr){
             bIndex->next->prev = bIndex->prev;
         }
+
+        if(bIndex == bulletType[a].alive){
+            bulletType[a].alive = bulletType[a].alive->next;
+        }
+
+        if(bulletType[a].alive!=nullptr){
+            bulletType[a].alive->prev = nullptr;
+        }
+
         bIndex->prev = nullptr;
         bIndex->next = dead;
         dead = bIndex;
@@ -171,8 +203,9 @@ void bulletpool::clearAll()
     for(int i = 0;i < typeCount; i++){
         dll* temp = bulletType[i].alive;
         while(temp!= nullptr){
-            die(temp);
-            temp = temp->next;
+            dll* temp2 = temp->next;
+            die(i, temp);
+            temp = temp2;
         }
     }
 }
@@ -185,6 +218,29 @@ bool bulletpool::checkBounds(int index, int thisType)
     return (b->p.x <= bounds[0].x + r) && (b->p.y <= bounds[0].y + r) && (b->p.x >= bounds[1].x - r) && (b->p.y >= bounds[1].y - r);
 }
 
+int bulletpool::getImpacts(vec2 origin, vec2 sz)
+{
+    int impacts = 0;
+    vec2 b0 = vec2{origin.x + sz.x, origin.y + sz.y};
+    vec2 b1 = vec2{origin.x - sz.x, origin.y - sz.y};
+    for(int i = 0;i < typeCount; i++){
+        dll* temp = bulletType[i].alive;
+        float r = 0.0;
+        while(temp!= nullptr){
+            bullet* b = &bullets[temp->index];
+            if((b->p.x <= b0.x + r) && (b->p.y <= b0.y + r) && (b->p.x >= b1.x - r) && (b->p.y >= b1.y - r)){
+                impacts++;
+                dll* temp2 = temp;
+                temp = temp->next;
+                die(i, temp2);
+            }else{
+                temp = temp->next;
+            }
+
+        }
+    }
+    return impacts;
+}
 
 
 void bulletpool::tick()
@@ -229,7 +285,7 @@ void bulletpool::tick()
             if(bullets[temp->index].ticks<=0 || !checkBounds(temp->index, i)){
                 dll* temp2 = temp;
                 temp = temp->next;
-                die(temp2);
+                die(i, temp2);
             }else{
                 temp = temp->next;
             }
@@ -238,14 +294,20 @@ void bulletpool::tick()
     }
 }
 
-void bulletpool::fire(int type, int cycle, vec2 origin, vec2 ply)
+void bulletpool::playerFire(int cycle, vec2 plyPos)
+{
+    spawn(0, 1000, 0.01, 0.0, 0.0, 0.0, plyPos);
+}
+
+
+void bulletpool::fire(int type, int cycle, vec2 origin, vec2 plyPos)
 {
     switch(type){
     case 0:
         doomSpiral(cycle, origin);
         break;
     case 1:
-        aimed(cycle,origin, ply);
+        aimed(cycle,origin, plyPos);
         break;
 
     }
@@ -272,11 +334,11 @@ void bulletpool::doomSpiral(int cycle, vec2 origin)
 }
 
 
-void bulletpool::aimed(int cycle, vec2 origin, vec2 ply)
+void bulletpool::aimed(int cycle, vec2 origin, vec2 plyPos)
 {
     if(cycle > 20 && cycle <= 40 ){
-        float theta = PI + atan((ply.x - origin.x)/ (ply.y - origin.y));
-        if(origin.y > ply.y){
+        float theta = PI + atan((plyPos.x - origin.x)/ (plyPos.y - origin.y));
+        if(origin.y > plyPos.y){
             theta += PI;
         }
         for(int i = 0; i < 20; i++){
