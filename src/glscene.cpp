@@ -342,8 +342,67 @@ int GLScene::winMsg(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     if(wParam == '1'){
         lv->loadLevel(1);
     }
-    if(wParam == '0'){
-        lv->loadLevel(0);
+    if(wParam == 'n'){
+    if(LANDINGPAGE == true)
+    {
+        setMenuPage();
+    }else{
+    LANDINGPAGE = false;
+    MENUPAGE = false;
+    GAMEPAGE = false;
+    HELPPAGE = false;
+    CREDITPAGE = false;
+    QUIT = false;
+    GAMEOVER = false;
+    INTRO = false;
+    gameActive = true;
+    }
+    }
+    if(wParam == 'h'){
+        //gameActive = false;
+        //setHelpPage();
+        if(gameActive == true){
+            gameActive = false;
+            setHelpPage();
+        }
+        else{
+            setHelpPage();
+        }
+    }
+    */
+    if(wParam == 's' || wParam == 'S'){
+        setMenuPage();
+        gameActive = false;
+    }
+    if((wParam == 'n' || wParam == 'N')){
+        gameActive = true;
+    }
+    if(wParam == 'h' || wParam == 'H'){
+        setHelpPage();
+        gameActive = false;
+    }
+    if(wParam == 'b' || wParam == 'B'){
+        setMenuPage();
+        gameActive = false;
+    }
+    if(wParam == 'c' || wParam == 'C'){
+        setCreditPage();
+        gameActive = false;
+    }
+    if((wParam == 'p' || wParam == 'P') && gameActive == true){
+        setQuitPage();
+        gameActive = false;
+    }
+    if((wParam == 'r' || wParam == 'R') && QUIT == true){
+        setGamePage();
+        gameActive = true;
+    }
+    if((wParam == 'M' || wParam == 'm') && QUIT == true){
+        setMenuPage();
+        gameActive = false;
+    }
+        if((wParam == 'M' || wParam == 'm') && gameActive == true){
+
     }
 
 
