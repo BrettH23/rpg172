@@ -17,12 +17,18 @@ player::player()
     direction = true;
     playerDir = 'R';
 
-    sizeRadius = 0.5;
+    sizeRadius = vec2{0.5, 0.5};
 
     speed.x = 0.002;
     speed.y = 0.002;
 
-    topSpeed = 0.008;
+    topSpeed = 0.006;
+    theta = 0.0;
+
+    maxHP = 3.0;
+    attack = 1.0;
+
+    invul = 0;
 
     dUp = dDown = dRight = dLeft = firing = false; //determines which directions are being held allowing orthogonal movement
 }
@@ -48,6 +54,45 @@ player::~player()   //destructor for player, needs to clear those animations
         }
     }
 }
+
+void player::drawCursor(float mouseX, float mouseY, bool showLine)
+{
+    if(actionTrigger != DEAD){
+        glPushMatrix();
+            glDisable(GL_TEXTURE_2D);
+            glColor3f(0.0,0.0,0.0);
+            glPointSize(8.0);
+            glBegin(GL_POINTS);
+            glVertex2f(position.x, position.y);
+            glEnd();
+
+            glColor3f(1.0,1.0,1.0);
+            glPointSize(4.0);
+            glBegin(GL_POINTS);
+            glVertex2f(position.x, position.y);
+            glEnd();
+
+            glPointSize(4.0);
+            glBegin(GL_POINTS);
+            glVertex2f(mouseX, mouseY);
+            glEnd();
+
+            if(showLine){
+                glColor4f(1.0,1.0,1.0,0.2);
+                glLineWidth(2.0);
+                glBegin(GL_LINES);
+                glVertex2f(position.x, position.y);
+                glVertex2f(mouseX, mouseY);
+                glEnd();
+            }
+
+            glColor4f(1.0,1.0,1.0,1.0);
+
+            glEnable(GL_TEXTURE_2D);
+        glPopMatrix();
+    }
+}
+
 
 void player::playerInit(char* filename)
 {
@@ -86,6 +131,8 @@ void player::playerInit(char* filename)
     }
     curFrame = &animations[0];  //loop animation. Now advancing a frame is always an o(1) operation
 
+    frameLimiter = 0;
+
     lastTick = clock();
     /*
     bulletClock = clock();  //for tracking if it's time to tick a bullet
@@ -93,10 +140,25 @@ void player::playerInit(char* filename)
     */
 }
 
+void player::setFire(bool b)
+{
+    if(actionTrigger != DEAD){
+        firing = b;
+    }
+    else{
+        firing = false;
+    }
+}
+
+
 void player::actions(acts action)
 {
     switch(action)
     {
+        case DEAD:
+            firing = false;
+        break;
+
         case IDLE:
 
             if(actionTrigger!=IDLE){
@@ -181,152 +243,46 @@ void player::moveP()    //used for moving the player, also checks if time is all
 
 }
 
-void player::follow(float xM, float yM, int cycle)
+void player::follow(float xM, float yM)
 {
-    float x1 = xM - position.x;
-    float y1 = yM - position.y;
-    float fRatio = sqrt(x1*x1 + y1*y1);
-    float adjX = (x1*topSpeed)/fRatio;
-    float adjY = (y1*topSpeed)/fRatio;
-
-    if(cycle % 3 == 0){
-        this->actions(WALKR);
-    }
-
-
-    if(topSpeed > fRatio){
-        position.x = xM;
-        position.y = yM;
-
-    }else{
-        position.x += adjX;
-        position.y += adjY;
-    }
-    float xOffset = (3.0/8.0)-0.002;
-    float yOffset = 0.5-0.002;
-    if(position.x >= xOffset){
-        position.x = xOffset;
-    }if(position.x <= -xOffset){
-        position.x = -xOffset;
-    }
-
-    if(position.y >= yOffset){
-        position.y = yOffset;
-    }if(position.y <= -yOffset){
-        position.y = -yOffset;
-    }
-    /*
-    if(abs(x1) > adjX){
-std::cout << xM << std::endl;
-    }else{
-
-    }
-
-    if(abs(y1) > adjY){
-std::cout << yM << std::endl;
-    }else{
-
-    }*/
-}
-
-
-
-
-/*
-void player::doBullet()
-{
-    if(firing){
-        if(headBullet == nullptr || clock() - headBullet->born > 100)   //adds bullet if it's ok to add a bullet
-        {
-            pushBullet();
-
-        }
-    }
-}
-
-void player::pushBullet()
-{
-    bullet* tempBullet = new bullet;    //allocate memory
-    tempBullet->born = clock();         //bullets are culled after a certain amount of time to emulate falloff you'd see in shooters
-    tempBullet->x = position.x;         //inherits parent position
-    tempBullet->y = position.y;
-    tempBullet->z = position.z;
-    tempBullet->next = nullptr;
-    if(headBullet!=nullptr){
-        tempBullet->next = headBullet;
-    }
-    //bullets are pushed onto front
-    headBullet = tempBullet;
-}
-
-void player::cullBullet(bullet* thisBullet) //clears the current bullet as well as all following bullets
-{
-    while(thisBullet!=nullptr){ //stops if it hits a nullptr, which is end of list
-        bullet* tempBullet = thisBullet;    //for separating current from next bullet
-        thisBullet = thisBullet->next;
-        delete tempBullet;
-    }
-}
-
-
-void player::drawBullets()  //draws all bullets currently in the linked list
-{
-    bullet* tempBullet = headBullet;    //tempbullet is iterator
-    bullet* prevBullet = nullptr;       //only used to make sure culled bullets are set to null
-    float sizeB = sizeP / 10;           //size of bullet is scaled based on size of parent
-    bool bMoveReady = false;            //for clock that happens outside loop
-
-    if(clock()-bulletClock > 15){       //clocking bullet movement
-        bMoveReady = true;
-        bulletClock = clock();
-    }
-
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-    while(tempBullet != nullptr){
-
-        glPushMatrix();
-        glBindTexture(GL_TEXTURE_2D,bulletTex);
-        glTranslated(tempBullet->x,tempBullet->y,tempBullet->z);    //draw bullets based on their position
-        glBegin(GL_QUADS);
-
-            glTexCoord2f(0.0,1.0);
-            glVertex3f(-sizeB, -sizeB, 0.0);
-
-            glTexCoord2f(1.0,1.0);
-            glVertex3f(sizeB, -sizeB, 0.0);
-
-            glTexCoord2f(1.0,0.0);
-            glVertex3f(sizeB, sizeB, 0.0);
-
-            glTexCoord2f(0.0,0.0);
-            glVertex3f(-sizeB, sizeB, 0.0);
-        glEnd();
-        glPopMatrix();
-        if(bMoveReady){ //only moves if previous clock allows
-            tempBullet->y += bulletSpeed;   //only need to move one direction
+    if(actionTrigger != DEAD){
+        float x1 = xM - position.x;
+        float y1 = yM - position.y;
+        float fRatio = sqrt(x1*x1 + y1*y1);
+        float adjX = (x1*topSpeed)/fRatio;
+        float adjY = (y1*topSpeed)/fRatio;
+        frameLimiter++;
+        if(frameLimiter > 3){
+            this->actions(WALKR);
+            frameLimiter = 0;
         }
 
 
-        prevBullet = tempBullet;    //only for nullifying culled bullets
-        if(clock() - tempBullet->born > 5000){  //bullet is well off screen at this point since game height is locked to screen height
+        if(topSpeed > fRatio){
+            position.x = xM;
+            position.y = yM;
 
-            cullBullet(tempBullet); //clears all bullets after the time. Since bullets are culled in order, no need to check if remaining bullets can stay
-
-            if(tempBullet == headBullet){   //head also needs to be nulled if the head bullet is the last one
-                headBullet = nullptr;   //nullify head
-                tempBullet = nullptr;   //nullify currently selected bullet to kill loop
-            }else{
-                prevBullet->next = nullptr; //the previous bullet becomes the end this way
-                tempBullet = nullptr;
-            }
-
-             //
         }else{
-            tempBullet = tempBullet->next;  //if bullets are good keep iterating through the list
+            position.x += adjX;
+            position.y += adjY;
+        }
+        float xOffset = 0.5-0.002;
+        float yOffset = 0.5-0.002;
+        if(position.x >= xOffset){
+            position.x = xOffset;
+        }if(position.x <= -xOffset){
+            position.x = -xOffset;
         }
 
+        if(position.y >= yOffset){
+            position.y = yOffset;
+        }if(position.y <= -yOffset){
+            position.y = -yOffset;
+        }
 
     }
 }
-*/
+
+
+
+

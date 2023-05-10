@@ -26,7 +26,9 @@ typedef struct type_b{
     dll* alive;
     GLuint tex;
     GLuint mask;
+    float damage;
     float radius;
+    vec3 hue;
 };
 
 class bulletpool
@@ -36,7 +38,7 @@ class bulletpool
         virtual ~bulletpool();
 
         int cap;
-        float degree;
+        float fireAngle;
 
         enum type_p {PLAYER, ENEMY};
         type_p poolType;
@@ -53,17 +55,23 @@ class bulletpool
 
         bullet* bullets;
 
-        void texInit();
+        void initE(int);
+        void initP(int);
+
         void draw();
         void drawMasks(vec2);
 
         void spawn(int, int, float, float, float, float, vec2);
-        void die(dll*);
+        void die(int, dll*);
+        void clearAll();
         void tick();
         bool checkBounds(int, int);
+        float getDamage(vec2, vec2);
 
-        void fire(int);
-        void aimed(int, vec2);
+        void playerFire(int, int, vec2);
+        void fire(int, int, vec2, vec2);
+        void doomSpiral(int, vec2);
+        void aimed(int, vec2, vec2);
 
         textureLoader *tLoad = new textureLoader();
 

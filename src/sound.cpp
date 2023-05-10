@@ -13,13 +13,17 @@ sound::~sound()
 
 void sound::playMusic(char* File)
 {
-    engine->play2D(File,true);
+    if(!engine->isCurrentlyPlaying(File)){
+        engine->play2D(File,true);
+    }
+
 }
 
 void sound::playSound(char* File)
 {
-    if(!engine->isCurrentlyPlaying(File))
-    engine->play2D(File,false,false);
+    if(!engine->isCurrentlyPlaying(File)){
+        engine->play2D(File,false,false);
+    }
 }
 
 void sound::pauseSound(char* File)

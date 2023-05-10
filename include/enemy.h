@@ -19,14 +19,17 @@ class enemy: public actor
         void enemyTexture(char*);
         void doBehavior();
 
-        void actions();
+        void actions(acts);
 
+        vec2 hurtBoxA;
+        vec2 hurtBoxB;
 
         vec3 eRotation;      //rotation
 
         clock_t startTime;
 
-        float theta, velocity, t;//t is projectile time
+        float velocity;
+        int type;
 
 
         char direction; //determine direction including up and down

@@ -324,7 +324,7 @@ int WINAPI WinMain(	HINSTANCE	hInstance,			// Instance
 	}
 
 	// Create Our OpenGL Window
-	if (!CreateGLWindow("Game Engine Lesson 01",fullscreenWidth,fullscreenHeight,256,fullscreen))
+	if (!CreateGLWindow("Big Pond",fullscreenWidth,fullscreenHeight,256,fullscreen))
 	{
 		return 0;									// Quit If Window Was Not Created
 	}
@@ -346,7 +346,7 @@ int WINAPI WinMain(	HINSTANCE	hInstance,			// Instance
 		else										// If There Are No Messages
 		{
 			// Draw The Scene.  Watch For ESC Key And Quit Messages From DrawGLScene()
-		if (keys[VK_ESCAPE])
+            if (keys[VK_ESCAPE])
 			{
 				done=TRUE;							// ESC or DrawGLScene Signalled A Quit
 			}

@@ -14,22 +14,22 @@ class player : public actor
         virtual ~player();
 
         float topSpeed;
-
-
-        enum acts{IDLE, WALKL, WALKR, JUMP, ATTACK, DIE};
-        acts actionTrigger;
+        float attack;
 
         //float runSpeed;
 
         void playerInit(char*);
         void actions(acts);
         void moveP();
-        void follow(float, float, int);
-
+        void follow(float, float);
+        void drawCursor(float, float, bool);
+        void setFire(bool);
 
         bool direction;
         bool dUp, dDown, dRight, dLeft, firing;
         char playerDir; //determine direction including up and down
+
+        int frameLimiter;
 
         /*
         void doBullet();

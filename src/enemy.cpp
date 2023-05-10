@@ -16,14 +16,15 @@ enemy::enemy()
     speed.x = 0.002*(1+(float(rand()%100)/50.0));
     speed.y = 0.0;
 
-    sizeRadius = 0.5;
+    sizeRadius = vec2{0.5, 0.5};
 
     startTime = clock();
     actionTrigger = WALKL;
 
-    theta = 30*PI/180;
+    theta = 0.0;
     velocity = 35;
-    t = 0;
+    type = 0;
+    invul = 0;
 }
 
 enemy::~enemy()
@@ -47,9 +48,6 @@ void enemy::enemyTexture(char* filename)
 
 void enemy::initEnemy(GLuint tex, int vFrm, int hFrm)
 {
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-
     vFrames = vFrm;
     hFrames = hFrm;
 
@@ -61,46 +59,22 @@ void enemy::initEnemy(GLuint tex, int vFrm, int hFrm)
     this->tex = tex;
 }
 
-void enemy::actions()
+void enemy::actions(acts a)
 {
-    switch(actionTrigger)
+    actionTrigger = a;
+    switch(a)
     {
     case IDLE:
-        if(clock()-startTime>15){
-            xMin +=1.0/(float)hFrames;  //only needed one frame for this
-            xMax +=1.0/(float)hFrames;
-            startTime = clock();
-        }
+
     break;
 
     case WALKL:
-        if(clock()-startTime>15){
-            //xMin +=1.0/(float)hFrames;
-            //xMax +=1.0/(float)hFrames;
-
-            position.x -=speed.x;
-            //position.y = 0.01*cos(position.x);
-            //position.y = -0.5;
-            //yMax = 1.0/(float)vFrames;
-            //yMin = 0.0;
-            eRotation.z = 0.0;
-            startTime = clock();
-        }
+        xMax = 0.0;
+        xMin = 1.0/(float)hFrames;
     break;
     case WALKR:
-        if(clock()-startTime>15){
-            //xMin +=1.0/(float)hFrames;
-            //xMax +=1.0/(float)hFrames;
-
-            position.x +=speed.x;
-            //position.y = 0.01*cos(position.x);
-            //position.y = -0.5;
-            //yMax = 1.0;
-            //yMin = 1.0/(float)vFrames;
-            eRotation.z = 0.0;
-            startTime = clock();
-        }
+        xMax = 1.0/(float)hFrames;
+        xMin = 0.0;
     break;
     }
-
 }

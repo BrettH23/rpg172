@@ -22,19 +22,26 @@ class actor
 
         vec3 verts[4];
         vec3 position;
-        float sizeRadius;
+        vec2 sizeRadius;
+        float theta;
+
+        float maxHP;
+        float HP;
+        void hit(float);
 
         vec2 speed;
         float bulletSpeed;
 
-        enum acts{IDLE, WALKL, WALKR, JUMP, ATTACK, DIE};
-        acts actionTrigger;
+        int invul;
 
+        enum acts{IDLE, WALKL, WALKR, JUMP, ATTACK, DIE, DEAD};
+        acts actionTrigger;
         //float runSpeed;
 
         void draw();
         void texInit(char*);
         void setSize(float, float);
+        void tick();
 
         clock_t lastTick;
         clock_t bulletClock;
@@ -46,11 +53,7 @@ class actor
 
         float xMax, yMax, xMin, yMin;
 
-
-
-
         GLuint tex;
-        GLuint bulletTex;
         textureLoader *tLoad = new textureLoader();
 
         frame* animations;
