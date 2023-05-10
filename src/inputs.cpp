@@ -63,7 +63,7 @@ void Inputs::keyPressed(Model * mdl)
 void Inputs::keyPlayer(player* ply)
 {
     //switch(wParam){ //instead of incrementing user, sets a user state, then the user deals with the motion accordingly. Allows speed to not be locked to input speed
-        if(wParam == ' ')ply->firing = true;
+        if(wParam == ' ')ply->setFire(true);
 
         if(wParam == 'a'||wParam == 'A')ply->dLeft = true;
 
@@ -81,7 +81,7 @@ void Inputs::keyPlayer(player* ply)
 void Inputs::keyPlayerUp(player* ply)
 {
 
-        if(wParam == ' ')ply->firing = false;
+        if(wParam == ' ')ply->setFire(false);
 
         if(wParam == 'a'||wParam == 'A')ply->dLeft = false;
 

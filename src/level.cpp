@@ -48,6 +48,7 @@ void level::init(player *p, bulletpool *eB, bulletpool *pB)
     buildLevels();
     currentLevel = -1;
     tOffset = 0.0;
+    timer = clock();
 }
 
 void level::initLevel(int n,  levelData &l)
@@ -115,9 +116,10 @@ void level::drawEnemies()
 void level::drawEnemyMasks()
 {
     if(levelLive){
-        glColor3f(1.0, 0.0, 0.0);
+
         for(int i = 0; i < maxEnemies; i++){
             if(eData[i] != INACTIVE){
+                glColor3f(1.0, 0.0, 0.0);
                 enemies[i].draw();
             }
         }
@@ -150,7 +152,8 @@ void level::loadLevel(int lC)
     ply->position = vec3{0.0, -0.15, 0.0};
     ply->actions(ply->WALKR);
     ply->HP = ply->maxHP;
-
+    ply->invul = 100;
+    timer = clock();
 }
 
 void level::tickLevel()
@@ -159,10 +162,14 @@ void level::tickLevel()
     if(tOffset >= 2*PI){
         tOffset -= 2*PI;
     }
+    if(!levelLive){
+        return;
+    }
     levelData *l = &levelList[currentLevel];
     if(ply->firing){
-        pBullets->playerFire(bulletCycle, vec2{ply->position.x, ply->position.y + ply->sizeRadius.y});
+        pBullets->playerFire(0, bulletCycle, vec2{ply->position.x, ply->position.y + ply->sizeRadius.y});
     }
+    int deadEnemies = 0;
     for(int i = 0; i < maxEnemies; i++){
         if(i < l->eCount && eData[i] != INACTIVE &&enemies[i].actionTrigger != enemies[i].DEAD){
 
@@ -188,13 +195,19 @@ void level::tickLevel()
             }
             enemies[i].position = {updatedX, updatedY, 0.0};
             eBullets->fire(enemies[i].type, bulletCycle, vec2{enemies[i].position.x, enemies[i].position.y}, vec2{ply->position.x, ply->position.y});
-            int total = pBullets->getImpacts(vec2{enemies[i].position.x, enemies[i].position.y}, enemies[i].sizeRadius);
-            if(total > 0.0){
-                enemies[i].hit(float(total) * ply->attack);
+            float damageTotal = ply->attack * pBullets->getDamage(vec2{enemies[i].position.x, enemies[i].position.y}, enemies[i].sizeRadius);
+            if(damageTotal > 0.0){
+                enemies[i].hit(damageTotal);
             }
+        }
+        if(eData[i] == INACTIVE || enemies[i].actionTrigger == enemies[i].DEAD){
+            deadEnemies++;
         }
     }
 
+    if(deadEnemies == maxEnemies){
+        endLevel();
+    }
 
     bulletCycle++;
     if(bulletCycle >= 200){
@@ -204,5 +217,6 @@ void level::tickLevel()
 
 int level::endLevel()
 {
-
+    levelLive = false;
+    std::cout << timer << std::endl;
 }

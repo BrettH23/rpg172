@@ -42,6 +42,7 @@ class level
         int totalLevels;
         int bulletCycle;
 
+        clock_t timer;
 
         levelData *levelList;
 

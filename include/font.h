@@ -6,13 +6,6 @@
 #include "stdio.h"
 #include "string.h"
 
-typedef struct
-{
-    char letter;
-    float xMin, xMax, yMin, yMax;
-    vec3 fontSize;
-}charSet;
-
 class font
 {
     public:
@@ -23,7 +16,8 @@ class font
         void buildFonts(char*);
         void drawFonts(int);
         void drawLine(char*, float, float);
-        float scale;
+        void drawLineCentered(char*, float, float, float, int, int);
+        float defaultScale;
         float kerning;
 
         vec3 Rotate;

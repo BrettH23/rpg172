@@ -22,11 +22,13 @@ player::player()
     speed.x = 0.002;
     speed.y = 0.002;
 
-    topSpeed = 0.008;
+    topSpeed = 0.006;
     theta = 0.0;
 
     maxHP = 3.0;
-    attack = 5.0;
+    attack = 1.0;
+
+    invul = 0;
 
     dUp = dDown = dRight = dLeft = firing = false; //determines which directions are being held allowing orthogonal movement
 }
@@ -53,7 +55,7 @@ player::~player()   //destructor for player, needs to clear those animations
     }
 }
 
-void player::drawCursor(float mouseX, float mouseY)
+void player::drawCursor(float mouseX, float mouseY, bool showLine)
 {
     if(actionTrigger != DEAD){
         glPushMatrix();
@@ -75,12 +77,15 @@ void player::drawCursor(float mouseX, float mouseY)
             glVertex2f(mouseX, mouseY);
             glEnd();
 
-            glColor4f(1.0,1.0,1.0,0.2);
-            glLineWidth(2.0);
-            glBegin(GL_LINES);
-            glVertex2f(position.x, position.y);
-            glVertex2f(mouseX, mouseY);
-            glEnd();
+            if(showLine){
+                glColor4f(1.0,1.0,1.0,0.2);
+                glLineWidth(2.0);
+                glBegin(GL_LINES);
+                glVertex2f(position.x, position.y);
+                glVertex2f(mouseX, mouseY);
+                glEnd();
+            }
+
             glColor4f(1.0,1.0,1.0,1.0);
 
             glEnable(GL_TEXTURE_2D);
@@ -134,6 +139,17 @@ void player::playerInit(char* filename)
     headBullet = nullptr;   //headbullet initialized
     */
 }
+
+void player::setFire(bool b)
+{
+    if(actionTrigger != DEAD){
+        firing = b;
+    }
+    else{
+        firing = false;
+    }
+}
+
 
 void player::actions(acts action)
 {

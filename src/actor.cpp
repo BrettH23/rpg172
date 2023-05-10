@@ -23,11 +23,12 @@ actor::~actor()   //destructor for player, needs to clear those animations
 
 
 }
-
+float invulStates[] = {1.0,0.7,0.4,0.7};
 void actor::draw()
 {
     if(actionTrigger == DEAD){ return;}
     glPushMatrix();
+    if(invul > 0){glColor4f(1.0,1.0,1.0,invulStates[(4+invul)%4]);}
     glBindTexture(GL_TEXTURE_2D,tex);
     glTranslated(position.x,position.y,position.z);
     glRotatef(theta, 0.0, 0.0, 1.0);
@@ -45,6 +46,7 @@ void actor::draw()
         glTexCoord2f(xMin,yMin);
         glVertex3f(verts[3].x,verts[3].y,verts[3].z);
     glEnd();
+    glColor4f(1.0,1.0,1.0,1.0);
     glPopMatrix();
 }
 
@@ -55,6 +57,14 @@ void actor::texInit(char* filename)
     tLoad->loadTexture(filename, tex);
     //tLoad->loadTexture("images/bullet.png", bulletTex); //bullet is stored in the player class
 }
+void actor::tick()
+{
+    if(invul >0){
+        invul--;
+    }
+}
+
+
 
 void actor::setSize(float szX, float szY)
 {

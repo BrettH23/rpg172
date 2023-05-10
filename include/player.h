@@ -22,7 +22,8 @@ class player : public actor
         void actions(acts);
         void moveP();
         void follow(float, float);
-        void drawCursor(float, float);
+        void drawCursor(float, float, bool);
+        void setFire(bool);
 
         bool direction;
         bool dUp, dDown, dRight, dLeft, firing;

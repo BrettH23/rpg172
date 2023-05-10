@@ -32,6 +32,8 @@ class actor
         vec2 speed;
         float bulletSpeed;
 
+        int invul;
+
         enum acts{IDLE, WALKL, WALKR, JUMP, ATTACK, DIE, DEAD};
         acts actionTrigger;
         //float runSpeed;
@@ -39,6 +41,7 @@ class actor
         void draw();
         void texInit(char*);
         void setSize(float, float);
+        void tick();
 
         clock_t lastTick;
         clock_t bulletClock;
@@ -49,8 +52,6 @@ class actor
         float yFrame, xFrame;
 
         float xMax, yMax, xMin, yMin;
-
-
 
         GLuint tex;
         textureLoader *tLoad = new textureLoader();

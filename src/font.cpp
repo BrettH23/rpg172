@@ -6,7 +6,7 @@ font::font()
     Rotate.x = Rotate.y = Rotate.z = 0;
     position.x = position.y = position.z = 0;
     zoom = 0;
-    scale = 0.1;
+    defaultScale = 0.1;
     kerning = 0;
 }
 
@@ -32,7 +32,7 @@ void font::drawFonts(int)
 
 void font::drawLine(char* str, float startX, float startY)
 {
-    float scale_t = scale*0.5;
+    float scale_t = defaultScale*0.5;
     float posX = startX;
     float posY = startY;
 
@@ -63,6 +63,45 @@ void font::drawLine(char* str, float startX, float startY)
             glVertex3f(posX-scale_t, posY+scale_t, 0.0);
         glEnd();
         glPopMatrix();
-        posX += scale + kerning;
+        posX += defaultScale *( 1 + kerning);
     }
 }
+
+void font::drawLineCentered(char* str, float scale, float x0, float y0, int start, int totalChars)
+{
+    float scale_t = scale*0.5;
+    float posX = x0 - 0.5 * float(totalChars - 1) * (scale * (1 + kerning));
+    float posY = y0;
+
+    for(int i = start; i < start + totalChars; i++){
+
+        int charAsInt = int(str[i]);
+        float xCoord = oneOverHex*float(charAsInt%16);
+        float yCoord = oneOverHex*float(charAsInt/16);
+
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+        glPushMatrix();
+        glBindTexture(GL_TEXTURE_2D,tex);
+
+
+        glBegin(GL_QUADS);
+
+            glTexCoord2f(xCoord,yCoord+oneOverHex);
+            glVertex3f(posX-scale_t, posY-scale_t, 0.0);
+
+            glTexCoord2f(xCoord+oneOverHex,yCoord+oneOverHex);
+            glVertex3f(posX+scale_t, posY-scale_t, 0.0);
+
+            glTexCoord2f(xCoord+oneOverHex,yCoord);
+            glVertex3f(posX+scale_t, posY+scale_t, 0.0);
+
+            glTexCoord2f(xCoord,yCoord);
+            glVertex3f(posX-scale_t, posY+scale_t, 0.0);
+        glEnd();
+        glPopMatrix();
+        posX += scale *( 1 + kerning);
+    }
+
+}
+

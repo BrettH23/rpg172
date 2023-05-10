@@ -24,6 +24,7 @@ enemy::enemy()
     theta = 0.0;
     velocity = 35;
     type = 0;
+    invul = 0;
 }
 
 enemy::~enemy()

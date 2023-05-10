@@ -26,7 +26,9 @@ typedef struct type_b{
     dll* alive;
     GLuint tex;
     GLuint mask;
+    float damage;
     float radius;
+    vec3 hue;
 };
 
 class bulletpool
@@ -64,9 +66,9 @@ class bulletpool
         void clearAll();
         void tick();
         bool checkBounds(int, int);
-        int getImpacts(vec2, vec2);
+        float getDamage(vec2, vec2);
 
-        void playerFire(int, vec2);
+        void playerFire(int, int, vec2);
         void fire(int, int, vec2, vec2);
         void doomSpiral(int, vec2);
         void aimed(int, vec2, vec2);
