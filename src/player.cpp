@@ -25,8 +25,8 @@ player::player()
     topSpeed = 0.006;
     theta = 0.0;
 
-    maxHP = 3.0;
-    attack = 1.0;
+    maxHP = 4.0;
+    attack = 10.0;
 
     invul = 0;
 
@@ -35,24 +35,8 @@ player::player()
 
 player::~player()   //destructor for player, needs to clear those animations
 {
-    for(int i = 0;i < 3; i++){
-        frame* tempFrame = &animations[i];
-        while(tempFrame!=nullptr){
-            if(tempFrame->next == &animations[i]){
-                tempFrame->next = nullptr;  //makes sure deletion can't loop back to head
-            }
-        }
-    }
-    for(int i = 0;i < 3; i++){
-        frame* thisFrame = &animations[i];
-        while(thisFrame!=nullptr){
 
-            frame* tempFrame = thisFrame;
-            thisFrame = thisFrame->next;
-            delete tempFrame;   //destroy all frames
 
-        }
-    }
 }
 
 void player::drawCursor(float mouseX, float mouseY, bool showLine)
@@ -93,7 +77,7 @@ void player::drawCursor(float mouseX, float mouseY, bool showLine)
     }
 }
 
-
+float animX[4] = {0,1,2,1};
 void player::playerInit(char* filename)
 {
     texInit(filename);
@@ -108,10 +92,12 @@ void player::playerInit(char* filename)
 
     xFrame = xMax;
     yFrame = yMax;
+    curX = 0;
 
+    /*
     animations = new frame[3];
 
-    int animX[4] = {0,1,2,1};
+
 
     for(int j = 0; j < 3; j++){ //custom animation system, uses loops since all animations are exactly four frames.
         curFrame = &animations[j];  //current frame of animation stores the 'coordinates' of the current sprite tile
@@ -130,14 +116,11 @@ void player::playerInit(char* filename)
         curFrame->next = &animations[j];
     }
     curFrame = &animations[0];  //loop animation. Now advancing a frame is always an o(1) operation
-
+*/
     frameLimiter = 0;
 
-    lastTick = clock();
-    /*
-    bulletClock = clock();  //for tracking if it's time to tick a bullet
-    headBullet = nullptr;   //headbullet initialized
-    */
+
+
 }
 
 void player::setFire(bool b)
@@ -159,46 +142,13 @@ void player::actions(acts action)
             firing = false;
         break;
 
-        case IDLE:
 
-            if(actionTrigger!=IDLE){
-                curFrame = &animations[0];
-            }else{
-                curFrame = curFrame->next;
-            }
-            xMin = xFrame*curFrame->x;      //the current frame system allows for arbitrary arrangements of sprite sheets
-            xMax = xFrame*(curFrame->x+1);  //could have a list of xcoords and ycoords as well and just use curframe to access the list
-            yMin = yFrame*curFrame->y;
-            yMax = yFrame*(curFrame->y+1);
-
-
-            actionTrigger = IDLE;
-            break;
-
-        case WALKL:
-            if(actionTrigger!=WALKL){
-                curFrame = &animations[1];
-            }else{
-                curFrame = curFrame->next;
-            }
-            xMin = xFrame*(curFrame->x+1);
-            xMax = xFrame*curFrame->x;
-            yMin = yFrame*curFrame->y;
-            yMax = yFrame*(curFrame->y+1);
-
-
-            actionTrigger = WALKL;
-        break;
         case WALKR:
-            if(actionTrigger!=WALKR){
-                curFrame = &animations[1];
-            }else{
-                curFrame = curFrame->next;
-            }
-            xMin = xFrame*curFrame->x;
-            xMax = xFrame*(curFrame->x+1);
-            yMin = yFrame*curFrame->y;
-            yMax = yFrame*(curFrame->y+1);
+
+            xMin = xFrame*(animX[curX]);
+            xMax = xFrame*(1.0+animX[curX]);
+            curX++;
+            if(curX >= 4)curX = 0;
 
             actionTrigger = WALKR;
         break;

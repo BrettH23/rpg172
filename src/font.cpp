@@ -15,9 +15,10 @@ font::~font()
     //dtor
 }
 
-void font::initFonts(char* file)
+void font::initFonts(char* file, char* file2)
 {
     tLoad->loadTexture(file, tex);
+    tLoad->loadTexture(file2, texOutlined);
 }
 
 void font::buildFonts(char* str)
@@ -30,13 +31,13 @@ void font::drawFonts(int)
 
 }
 
-void font::drawLine(char* str, float startX, float startY)
+void font::drawLine(char* str, float scale, float startX, float startY, int totalChars, bool outlined)
 {
-    float scale_t = defaultScale*0.5;
+    float scale_t = scale*0.5;
     float posX = startX;
     float posY = startY;
 
-    for(int i = 0; i < strlen(str); i++){
+    for(int i = 0; i < totalChars; i++){
 
         int charAsInt = int(str[i]);
         float xCoord = oneOverHex*float(charAsInt%16);
@@ -45,7 +46,11 @@ void font::drawLine(char* str, float startX, float startY)
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
         glPushMatrix();
-        glBindTexture(GL_TEXTURE_2D,tex);
+        if(outlined){
+            glBindTexture(GL_TEXTURE_2D,texOutlined);
+        }else{
+            glBindTexture(GL_TEXTURE_2D,tex);
+        }
 
 
         glBegin(GL_QUADS);
@@ -63,11 +68,11 @@ void font::drawLine(char* str, float startX, float startY)
             glVertex3f(posX-scale_t, posY+scale_t, 0.0);
         glEnd();
         glPopMatrix();
-        posX += defaultScale *( 1 + kerning);
+        posX += scale *( 1 + kerning);
     }
 }
 
-void font::drawLineCentered(char* str, float scale, float x0, float y0, int start, int totalChars)
+void font::drawLineCentered(char* str, float scale, float x0, float y0, int start, int totalChars, bool outlined)
 {
     float scale_t = scale*0.5;
     float posX = x0 - 0.5 * float(totalChars - 1) * (scale * (1 + kerning));
@@ -82,9 +87,13 @@ void font::drawLineCentered(char* str, float scale, float x0, float y0, int star
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
         glPushMatrix();
-        glBindTexture(GL_TEXTURE_2D,tex);
 
 
+        if(outlined){
+            glBindTexture(GL_TEXTURE_2D,texOutlined);
+        }else{
+            glBindTexture(GL_TEXTURE_2D,tex);
+        }
         glBegin(GL_QUADS);
 
             glTexCoord2f(xCoord,yCoord+oneOverHex);

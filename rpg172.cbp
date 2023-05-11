@@ -17,8 +17,8 @@
 				</Compiler>
 			</Target>
 			<Target title="Release">
-				<Option output="bin/Release/rpg172" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj/Release/" />
+				<Option output="../../Desktop/finalgame/rpg172" prefix_auto="1" extension_auto="1" />
+				<Option object_output="../../Desktop/finalgame" />
 				<Option type="0" />
 				<Option compiler="gcc" />
 				<Compiler>

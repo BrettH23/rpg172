@@ -318,10 +318,10 @@ int WINAPI WinMain(	HINSTANCE	hInstance,			// Instance
     int	fullscreenHeight = GetSystemMetrics(SM_CYSCREEN);
 
 	// Ask The User Which Screen Mode They Prefer
-	if (MessageBox(NULL,"Would You Like To Run In Fullscreen Mode?", "Start FullScreen?",MB_YESNO|MB_ICONQUESTION)==IDNO)
-	{
-		fullscreen=FALSE;							// Windowed Mode
-	}
+	//if (MessageBox(NULL,"Would You Like To Run In Fullscreen Mode?", "Start FullScreen?",MB_YESNO|MB_ICONQUESTION)==IDNO)
+	//{
+		//fullscreen=FALSE;							// Windowed Mode
+	//}
 
 	// Create Our OpenGL Window
 	if (!CreateGLWindow("Big Pond",fullscreenWidth,fullscreenHeight,256,fullscreen))
@@ -346,7 +346,7 @@ int WINAPI WinMain(	HINSTANCE	hInstance,			// Instance
 		else										// If There Are No Messages
 		{
 			// Draw The Scene.  Watch For ESC Key And Quit Messages From DrawGLScene()
-            if (keys[VK_ESCAPE])
+            if (Scene->quit)
 			{
 				done=TRUE;							// ESC or DrawGLScene Signalled A Quit
 			}
@@ -372,7 +372,9 @@ int WINAPI WinMain(	HINSTANCE	hInstance,			// Instance
 
 	// Shutdown
 
+
 	KillGLWindow();									// Kill The Window
+	Scene->dumbDestructor();
 	delete Scene;
 	return (msg.wParam);							// Exit The Program
 }
