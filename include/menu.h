@@ -2,6 +2,7 @@
 #define MENU_H
 
 #include "commons.h"
+#include <sound.h>
 #include<textureloader.h>
 #include <GL/gl.h>
 #include "font.h"
@@ -61,7 +62,7 @@ class menu
         menuElement generateElement(e_type, int, int, int, vec2, vec3, float, float, char*);
         void drawElement(menuElement&);
         void hover(float, float);
-        void click();
+        void click(sound *);
         void escPressed();
         void tick();
         vec2 mousePos;

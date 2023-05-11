@@ -315,8 +315,8 @@ int GLScene::GLinit()
     timer = clock();
 
     snds->initSounds();
-
-    snds->playMusic("sounds/gameSound.mp3");
+    snds->engine->stopAllSounds();
+    //snds->playMusic("sounds/gameSound.mp3");
 
     return true;
 }
@@ -350,7 +350,7 @@ int GLScene::winMsg(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
     if(uMsg == WM_LBUTTONDOWN){
 
-        menuHud->click();
+        menuHud->click(snds);
     }
     if(uMsg == WM_RBUTTONDOWN){
 
