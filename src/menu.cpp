@@ -13,7 +13,7 @@ menu::~menu()
 {
     //dtor
 }
-GLvoid menu::init(font *f, level *l)
+GLvoid menu::init(font *f, level *l, sound* soundGuy)
 {
     quit = false;
     checkQuit = false;
@@ -25,6 +25,7 @@ GLvoid menu::init(font *f, level *l)
     vec3 black = vec3{0.0,0.0,0.0};
     vec3 white = vec3{1.0,1.0,1.0};
     levels = l;
+    sfxEngine = soundGuy;
 
     quitOverlay.alpha = 0.0;
     quitOverlay.state = QUITMENU;
@@ -72,12 +73,12 @@ GLvoid menu::init(font *f, level *l)
     pages[3].alpha = 1.0;
     pages[3].totalElements = 6;
     pages[3].elements = new menuElement[6];
-    pages[3].elements[0] = generateElement(LEVELSET, 0, 9, 1 ,vec2{-0.5,0.2},black, 0.05, 0.02, " LEVEL 1 ");
-    pages[3].elements[1] = generateElement(LEVELSET, 1, 9, 1 ,vec2{-0.5,0.1},black, 0.05, 0.02, " LEVEL 2 ");
-    pages[3].elements[2] = generateElement(LEVELSET, 2, 9, 1 ,vec2{-0.5,0.0},black, 0.05, 0.02, " LEVEL 3 ");
-    pages[3].elements[3] = generateElement(LEVELSET, 3, 9, 1 ,vec2{-0.5,-0.1},black, 0.05, 0.02, " LEVEL 4 ");
-    pages[3].elements[4] = generateElement(LEVELSET, 4, 9, 1 ,vec2{-0.5,-0.2},black, 0.05, 0.02, " LEVEL 5 ");
-    pages[3].elements[5] = generateElement(PAGESET, 2, 9, 1 ,vec2{-0.5,-0.4},black, 0.05, 0.02, " GO BACK ");
+    pages[3].elements[0] = generateElement(LEVELSET, 0, 9, 1 ,vec2{-0.5,0.2},black, 0.05, 0.02, "LEVEL 1  ");
+    pages[3].elements[1] = generateElement(LEVELSET, 1, 9, 1 ,vec2{-0.5,0.1},black, 0.05, 0.02, "LEVEL 2  ");
+    pages[3].elements[2] = generateElement(LEVELSET, 2, 9, 1 ,vec2{-0.5,0.0},black, 0.05, 0.02, "LEVEL 3  ");
+    pages[3].elements[3] = generateElement(LEVELSET, 3, 9, 1 ,vec2{-0.5,-0.1},black, 0.05, 0.02, "LEVEL 4  ");
+    pages[3].elements[4] = generateElement(LEVELSET, 4, 9, 1 ,vec2{-0.5,-0.2},black, 0.05, 0.02, "LEVEL 5  ");
+    pages[3].elements[5] = generateElement(PAGESET, 2, 9, 1 ,vec2{-0.5,-0.4},black, 0.05, 0.02, "GO BACK  ");
 
 
     pages[4].state = HELPPAGE;
@@ -125,7 +126,16 @@ GLvoid menu::init(font *f, level *l)
     pages[7].elements[1].lineLength = 4;
     pages[7].elements[2] = generateElement(RESULTSCREEN, 0, 30, 9, vec2{0.0,0.05},black, 0.055, 0.05, "");
 
-
+    failure = new char*[9];
+    failure[0] = "TRY NOT GETTING HIT NEXT TIME";
+    failure[1] = "THAT WAS DEFINITELY YOUR FAULT";
+    failure[2] = "DEAD LOL";
+    failure[3] = "THE KEY IS TO NOT GET HIT";
+    failure[4] = "THIS GAME CHEATS";
+    failure[5] = "RESPAWN?";
+    failure[6] = "DEAD";
+    failure[7] = "OOPS";
+    failure[8] = "POOR THING";
 }
 
 GLvoid menu::drawPage(GLfloat w , GLfloat h)
@@ -157,7 +167,7 @@ GLvoid menu::drawPage(GLfloat w , GLfloat h)
         }
     glPopMatrix();
 }
-
+int randVal;
 void menu::drawElement(menuElement& m)
 {
 
@@ -175,6 +185,11 @@ void menu::drawElement(menuElement& m)
             glTexCoord2f(0.0, 0.0); glVertex2f(m.bounds.bound0.x , m.bounds.bound0.y);
         glEnd();
         glEnable(GL_TEXTURE_2D);
+    }
+    if(m.elemType == LEVELSELECT && m.index >=0){
+        setRankColor(levels->levelList[m.index].scoreRank);
+        writer->drawLine(&levels->levelList[m.index].scoreRank, m.fontSize, m.bounds.bound0.x - m.fontSize, m.bounds.center.y, 1, true );
+        glColor4f(1.0,1.0,1.0,1.0);
     }
 
     glColor4f(m.textHue.x,m.textHue.y,m.textHue.z, 1.0);
@@ -203,14 +218,16 @@ void menu::drawElement(menuElement& m)
             yOffset -= m.fontSize*2;
 
             writer->drawLine("Total:", m.fontSize, xOffset, yOffset, 6, false );
-            buf2 = itoa(levels->finalTimeBonus, buffer, 10);
+            buf2 = itoa(levels->finalScore, buffer, 10);
             writer->drawLine(buf2, m.fontSize, xOffset + m.fontSize*11 + m.fontSize*writer->kerning*(10), yOffset, strlen(buf2), false );
             yOffset -= m.fontSize*2;
 
             writer->drawLine("Rank:", m.fontSize, xOffset, yOffset, 6, false );
-            writer->drawLine(&levels->finalRank, m.fontSize, xOffset + m.fontSize*11 + m.fontSize*writer->kerning*(10), yOffset, 1, false );
+            setRankColor(levels->finalRank);
+            writer->drawLine(&levels->finalRank, m.fontSize, xOffset + m.fontSize*11 + m.fontSize*writer->kerning*(10), yOffset, 1, true );
         }else{
-            writer->drawLineCentered("DEAD",m.fontSize*2, m.bounds.center.x, m.bounds.center.y,0,4, true);
+
+            writer->drawLineCentered(failure[randVal],m.fontSize, m.bounds.center.x, m.bounds.center.y,0,strlen(failure[randVal]), false);
         }
 
     }else{
@@ -228,10 +245,37 @@ void menu::tick()
 {
     if(currentState == 0 && !levels->levelLive){
         paused = true;
+        randVal = rand() % 9;
         currentState = 7;
     }
 }
 
+void menu::setRankColor(char c)
+{
+    switch(c){
+    case 'P':
+        glColor4f(1.0,1.0,0.3,1.0);
+        break;
+    case 'S':
+        glColor4f(1.0,1.0,0.0,1.0);
+        break;
+    case 'A':
+        glColor4f(0.3,1.0,0.3,1.0);
+        break;
+    case 'B':
+        glColor4f(0.3,1.0,1.0,1.0);
+        break;
+    case 'C':
+        glColor4f(0.4,0.4,0.4,1.0);
+        break;
+    case 'D':
+        glColor4f(0.8,0.0,0.0,1.0);
+        break;
+    case 'F':
+        glColor4f(0.8,0.0,0.0,1.0);
+        break;
+    }
+}
 
 
 
@@ -298,6 +342,9 @@ void menu::click(sound *snds)
                 currentState = whichOverlay->elements[i].index;
                 if(currentState == 0){
                     paused = false;
+                    sfxEngine->setTrack(levels->currentLevel);
+                }else{
+                    sfxEngine->setTrack(5);
                 }
                 break;
             case OPENQUIT:

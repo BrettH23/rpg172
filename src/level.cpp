@@ -73,7 +73,8 @@ void level::initLevel(int n,  levelData &l)
 void level::buildLevels()
 {
     initLevel(4, levelList[0]);
-
+    levelList[0].scoreRank = 'F';
+    levelList[0].highScore = 0;
     behaviorType b1[] = {STILL, ZAG, ORBIT, ORBIT};
     int e1[] = {0,1,4,3};
     float t1[] = {0.0, PI, 0.5, 0.0};
@@ -91,6 +92,8 @@ void level::buildLevels()
 
 
     initLevel(5, levelList[1]);
+    levelList[1].scoreRank = 'F';
+    levelList[1].highScore = 0;
 
     behaviorType b2[] = {ZAG, ZAG, ZAG, ZAG, ZAG};
     int e2[] = {4,4,4,4,4};
@@ -256,7 +259,7 @@ int level::endLevel(bool win)
             float timePenalty = (finalTime/levelList[currentLevel].par) - 1.0;
             float timeBonus;
             if(timePenalty <= 0){
-                timeBonus = 100;
+                timeBonus = 1.0;
             }else if(timePenalty >= 1){
                 timeBonus = 0;
             }else{
@@ -282,16 +285,20 @@ int level::endLevel(bool win)
             float rankCheck = float(finalScore) / float(maxKillScore * 2);
             if(rankCheck >= 1.0){
                 finalRank = 'P';
-            }else if(rankCheck >= 0.92){
+            }else if(rankCheck >= 0.95){
                 finalRank = 'S';
-            }else if(rankCheck >= 0.82){
+            }else if(rankCheck >= 0.85){
                 finalRank = 'A';
-            }else if(rankCheck >= 0.7){
+            }else if(rankCheck >= 0.75){
                 finalRank = 'B';
-            }else if(rankCheck >=0.50){
+            }else if(rankCheck >=0.55){
                 finalRank = 'C';
             }else{
                 finalRank = 'D';
+            }
+            if(finalScore > levelList[currentLevel].highScore){
+                levelList[currentLevel].highScore = finalScore;
+                levelList[currentLevel].scoreRank = finalRank;
             }
         }
 

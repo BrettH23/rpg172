@@ -30,7 +30,7 @@ player::player()
 
     invul = 0;
 
-    dUp = dDown = dRight = dLeft = firing = false; //determines which directions are being held allowing orthogonal movement
+    dUp = dDown = dRight = dLeft = firing = firing1 = false; //determines which directions are being held allowing orthogonal movement
 }
 
 player::~player()   //destructor for player, needs to clear those animations

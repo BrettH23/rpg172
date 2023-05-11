@@ -7,6 +7,7 @@
 #include <GL/gl.h>
 #include "font.h"
 #include "level.h"
+#include "sound.h"
 
 enum e_type{NOACTION, HEADER, PAGESET, LEVELSET, UPGRADESET, SETEQUIP, QUITGAME, OPENQUIT, CLOSEQUIT, RESULTSCREEN};
 enum state_p{GAMEPAGE, LANDINGPAGE, MAINMENU, LEVELSELECT, HELPPAGE, CREDITPAGE, PAUSE, LEVELEND, QUITMENU};
@@ -52,12 +53,13 @@ class menu
         page *pages;
         page quitOverlay;
         font *writer;
+        char** failure;
 
         bool paused;
         bool quit;
         bool checkQuit;
 
-        GLvoid init(font*, level*);
+        GLvoid init(font*, level*, sound*);
         GLvoid drawPage(GLfloat, GLfloat);
         menuElement generateElement(e_type, int, int, int, vec2, vec3, float, float, char*);
         void drawElement(menuElement&);
@@ -65,8 +67,10 @@ class menu
         void click(sound *);
         void escPressed();
         void tick();
+        void setRankColor(char);
         vec2 mousePos;
         level *levels;
+        sound *sfxEngine;
 
         float xMin, xMax, yMin, yMax;
 

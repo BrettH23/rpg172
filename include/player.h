@@ -26,7 +26,7 @@ class player : public actor
         void setFire(bool);
 
         bool direction;
-        bool dUp, dDown, dRight, dLeft, firing;
+        bool dUp, dDown, dRight, dLeft, firing, firing1;
         char playerDir; //determine direction including up and down
 
         int frameLimiter;

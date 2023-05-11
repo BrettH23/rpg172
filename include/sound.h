@@ -20,6 +20,12 @@ class sound
         void playSound(char *);
         void pauseSound(char *);
         int initSounds();
+        void tickSounds();
+        void setTrack(int);
+        char** tracks;
+        int currentTrack;
+        ISound *music;
+        char** sfx;
 
 
     protected:
