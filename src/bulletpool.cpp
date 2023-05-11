@@ -18,7 +18,7 @@ void bulletpool::initE(int c)
     poolType = ENEMY;
     cap = c;
     bullets = new bullet[cap];
-    typeCount = 6;
+    typeCount = 13;
     bulletType = new type_b[typeCount];
     dead = nullptr;
     for(int i = 0;i < cap;i++){
@@ -42,30 +42,36 @@ void bulletpool::initE(int c)
     tLoad->loadTexture("images/sprites/bullets/enemyBullets.png", bulletType[2].tex);
     tLoad->loadTexture("images/sprites/bullets/spikeBullet.png", bulletType[3].tex);
 
+    //STOCK
     bulletType[0].radius = 0.021;
     bulletType[0].alive = nullptr;
     bulletType[0].damage = 1.0;
-    bulletType[0].hue = vec3{1.0, 0.5, 0.8};
+    bulletType[0].hue = vec3{1.0, 0.7, 0.4};
 
     bulletType[1].radius = 0.008;
     bulletType[1].alive = nullptr;
     bulletType[1].damage = 1.0;
-    bulletType[1].hue = vec3{1.0, 0.7, 0.4};
+    bulletType[1].hue = vec3{0.08, 1.0, 0.2};
 
     bulletType[2].radius = 0.008;
     bulletType[2].alive = nullptr;
     bulletType[2].damage = 1.0;
-    bulletType[2].hue = vec3{1.0, 0.7, 0.4};
+    bulletType[2].hue = vec3{0.7, 0.7, 1.0};
 
-    bulletType[3].radius = 0.008;
+    bulletType[3].radius = 0.014;
     bulletType[3].alive = nullptr;
     bulletType[3].damage = 1.0;
-    bulletType[3].hue = vec3{1.0, 0.7, 0.4};
+    bulletType[3].hue = vec3{1.0, 1.0, 1.0};
 
+    bulletType[4].tex = bulletType[1].tex;
     bulletType[4].radius = 0.008;
     bulletType[4].alive = nullptr;
     bulletType[4].damage = 1.0;
     bulletType[4].hue = vec3{1.0, 0.7, 0.4};
+
+
+    //ALT COLORS AND SIZES
+
 
     bulletType[5].tex = bulletType[0].tex;
     bulletType[5].radius = 0.03;
@@ -73,6 +79,47 @@ void bulletpool::initE(int c)
     bulletType[5].damage = 1.0;
     bulletType[5].hue = vec3{1.0, 0.1, 0.0};
 
+    bulletType[6].tex = bulletType[3].tex;
+    bulletType[6].radius = 0.02;
+    bulletType[6].alive = nullptr;
+    bulletType[6].damage = 1.0;
+    bulletType[6].hue = vec3{0.93, 1.0, 0.0};
+
+    bulletType[7].tex = bulletType[3].tex;
+    bulletType[7].radius = 0.008;
+    bulletType[7].alive = nullptr;
+    bulletType[7].damage = 1.0;
+    bulletType[7].hue = vec3{0.93, 1.0, 0.0};
+
+    bulletType[8].tex = bulletType[2].tex;
+    bulletType[8].radius = 0.0063;
+    bulletType[8].alive = nullptr;
+    bulletType[8].damage = 1.0;
+    bulletType[8].hue = vec3{0.83, 0.0, 0.0};
+
+    bulletType[10].tex = bulletType[0].tex;
+    bulletType[10].radius = 0.04;
+    bulletType[10].alive = nullptr;
+    bulletType[10].damage = 1.0;
+    bulletType[10].hue = vec3{0.0, 0.0, 0.0};
+
+    bulletType[11].tex = bulletType[0].tex;
+    bulletType[11].radius = 0.04;
+    bulletType[11].alive = nullptr;
+    bulletType[11].damage = 1.0;
+    bulletType[11].hue = vec3{0.7, 0.0, 0.8};
+
+    bulletType[9].tex = bulletType[1].tex;
+    bulletType[9].radius = 0.023;
+    bulletType[9].alive = nullptr;
+    bulletType[9].damage = 1.0;
+    bulletType[9].hue = vec3{0.0, 0.1, 0.5};
+
+    bulletType[12].tex = bulletType[3].tex;
+    bulletType[12].radius = 0.04;
+    bulletType[12].alive = nullptr;
+    bulletType[12].damage = 1.0;
+    bulletType[12].hue = vec3{0.0, 0.0, 0.0};
 
 }
 
@@ -133,7 +180,7 @@ void bulletpool::draw()
                     glTexCoord2f(0.0,0.0);glVertex2f(bullets[index].verts[3].x,bullets[index].verts[3].y);
                 glEnd();
 
-            }else{
+            }else if(poolType == PLAYER){
                 float mod = -float(bullets[index].ticks - 1)/4.0;
                 float mod2 = mod * bulletType[i].radius;
                 glColor4f(1.0,1.0,1.0,mod);
@@ -261,6 +308,20 @@ void bulletpool::clearAll()
     }
 }
 
+void bulletpool::fadeAll()
+{
+    for(int i = 0;i < typeCount; i++){
+        dll* temp = bulletType[i].alive;
+        while(temp!= nullptr){
+            if(bullets[temp->index].ticks > 50){
+                bullets[temp->index].ticks = 50;
+            }
+            temp = temp->next;
+        }
+    }
+}
+
+
 
 bool bulletpool::checkBounds(int index, int thisType)
 {
@@ -269,7 +330,7 @@ bool bulletpool::checkBounds(int index, int thisType)
     return (b->p.x <= bounds[0].x + r) && (b->p.y <= bounds[0].y + r) && (b->p.x >= bounds[1].x - r) && (b->p.y >= bounds[1].y - r);
 }
 
-float bulletpool::getDamage(vec2 origin, vec2 sz)
+float bulletpool::getDamage(vec2 origin, vec2 sz, bool isBoss)
 {
     float impacts = 0.0;
     vec2 b0 = vec2{origin.x + sz.x, origin.y + sz.y};
@@ -279,7 +340,13 @@ float bulletpool::getDamage(vec2 origin, vec2 sz)
         float r = bulletType[i].radius;
         while(temp!= nullptr){
             bullet* b = &bullets[temp->index];
-            bool test = sqrt(pow(b->p.x - origin.x, 2)+ pow(b->p.y - origin.y,2))<r + sz.x;
+            bool test;
+            if(isBoss){
+                test = b->p.y <= b0.y && b->p.y >= b1.y;
+            }else{
+                test = sqrt(pow(b->p.x - origin.x, 2)+ pow(b->p.y - origin.y,2))<r + sz.x;
+            }
+
             if(test && b->ticks > 0){
                 impacts+= bulletType[i].damage;
                 bullets[temp->index].ticks = 0;
@@ -348,7 +415,7 @@ void bulletpool::tick()
 void bulletpool::playerFire(int type, int cycle, vec2 plyPos)
 {
     float randTheta = (2*float(rand())/float(RAND_MAX) - 1)*0.085;
-    spawn(type, 50, 0.01, 0.0, randTheta, 0.0, plyPos);
+    spawn(type, 1000, 0.01, 0.0, randTheta, 0.0, plyPos);
 }
 
 
@@ -359,22 +426,32 @@ void bulletpool::fire(int type, int cycle, vec2 origin, vec2 plyPos, float healt
         fireOcto(cycle, origin, plyPos, health);
         break;
     case 1:
-        aimed(cycle,origin, plyPos);
+        firePiranha(cycle,origin, plyPos, health);
         break;
+    case 2:
+        firePuffer(cycle,origin, plyPos, health);
+        break;
+    case 3:
+        fireTurt(cycle,origin, plyPos, health);
+        break;
+    case 5:
+        fireBoss(cycle,origin, plyPos, health);
+        break;
+
 
     }
 
 }
-float doomMod = 1.0;
 
-void bulletpool::fireOcto(int cycle, vec2 origin, vec2 player, float health)
+
+void bulletpool::fireOcto(int cycle, vec2 origin, vec2 plyPos, float health)
 {
     int typeMod = 0;
     if(health <= 0.3){
         typeMod = 5;
     }
-    if((cycle) % 50 == 7){
-        float mainOffset = PI * 0.05 * float(cycle / 40);
+    if((cycle) % 20 == 1){
+        float mainOffset = PI * 0.05 * float(cycle / 20);
         float cycleIterator = 0.0;
         for(int i = 0;i < 8; i++){
             spawn(typeMod, 1000, -0.0015, 0.0000, mainOffset + cycleIterator, 0.0, origin);
@@ -382,8 +459,8 @@ void bulletpool::fireOcto(int cycle, vec2 origin, vec2 player, float health)
         }
 
     }
-    if(health <=0.6 && (cycle) % 50 == 27){
-        float mainOffset = -PI * 0.05 * float(cycle / 40);
+    if(health <=0.6 && (cycle) % 20 == 21){
+        float mainOffset = -PI * 0.05 * float(cycle / 20);
         float cycleIterator = 0.0;
         for(int i = 0;i < 8; i++){
             spawn(typeMod, 1000, -0.0015, 0.0000, mainOffset + cycleIterator, 0.0, origin);
@@ -392,7 +469,253 @@ void bulletpool::fireOcto(int cycle, vec2 origin, vec2 player, float health)
     }
 }
 
+void bulletpool::firePiranha(int cycle, vec2 origin, vec2 plyPos, float health)
+{
+    int cycleMod = 50;
+    if(health <= 0.3){
+        cycleMod = 30;
+    }
+    if(cycle % cycleMod == 2){
+        float randTheta = (2*float(rand())/float(RAND_MAX) - 1);
+        spawn(3, 1000, -0.0016, -0.00002, 0.05, randTheta * 0.1, origin);
+        randTheta = (2*float(rand())/float(RAND_MAX) - 1);
+        spawn(3, 1000, -0.0016, -0.00002, 0.0, randTheta * 0.1, origin);
+        randTheta = (2*float(rand())/float(RAND_MAX) - 1);
+        spawn(3, 1000, -0.0016, -0.00002, -0.05, randTheta * 0.1, origin);
+        if(health <= 0.6){
+            randTheta = (2*float(rand())/float(RAND_MAX) - 1)*0.04;
+            spawn(2, 1000, 0.003, -0.00006, randTheta, 0, origin);
+            randTheta = (2*float(rand())/float(RAND_MAX) - 1)*0.04;
+            spawn(2, 1000, 0.003, -0.00007, randTheta, 0, origin);
+            randTheta = (2*float(rand())/float(RAND_MAX) - 1)*0.04;
+            spawn(2, 1000, 0.003, -0.00006, randTheta, 0, origin);
+        }
+    }
 
+}
+
+void bulletpool::firePuffer(int cycle, vec2 origin, vec2 plyPos, float health)
+{
+    if(cycle % 25 == 15){
+        float theta = PI + atan((plyPos.x - origin.x)/ (plyPos.y - origin.y));
+        if(origin.y > plyPos.y){
+            theta += PI;
+        }
+        float rand1 = (2*float(rand())/float(RAND_MAX) - 1)*0.18;
+        float rand2 = (2*float(rand())/float(RAND_MAX) - 1)*0.0005;
+        spawn(6, 1000, -0.0015+ rand2, -0.00003, theta + rand1, 0.0, origin);
+        if(health <= 0.6){
+            float healthMod = 7;
+            if(health <=0.3){
+                healthMod = 6;
+            }
+            rand1 = (2*float(rand())/float(RAND_MAX) - 1)*0.18;
+            rand2 = (2*float(rand())/float(RAND_MAX) - 1)*0.0005;
+            spawn(healthMod, 1000, -0.0015+ rand2, -0.00003, theta + rand1, 0.0, origin);
+        }
+
+    }
+}
+
+void bulletpool::fireTurt(int cycle, vec2 origin, vec2 plyPos, float health)
+{
+    if(cycle%100 > 75){
+        if(health <= 0.6){
+            float theta = PI + atan((plyPos.x - origin.x)/ (plyPos.y - origin.y));
+            if(origin.y > plyPos.y){
+                theta += PI;
+            }
+            float rand1 = (2*float(rand())/float(RAND_MAX) - 1)*0.18;
+            float rand2 = (2*float(rand())/float(RAND_MAX) - 1)*0.0015;
+            spawn(1, 1000, -0.002+ rand2, -0.00008, theta + rand1, 0.15, vec2{origin.x, origin.y + 0.08});
+            spawn(1, 1000, -0.002+ rand2, -0.00008, theta - rand1, 0.15, vec2{origin.x, origin.y + 0.08});
+        }
+
+    }
+    float rand3 = float(rand())/float(RAND_MAX) * 2 * PI;
+    int mod1 = 0;float mod2 = 0;
+    if(health <= 0.3){
+        mod1 = 900;
+        mod2 = 0.001;
+    }
+    if(cycle%4 == 2){
+        spawn(2, 100 + mod1, 0.0012 + mod2, 0.0, rand3, 0.15, vec2{origin.x, origin.y + 0.08});
+    }
+}
+
+float doomMod = 0.0;
+void bulletpool::fireBoss(int cycle, vec2 origin, vec2 plyPos, float health)
+{
+    if(health <= 0.3){
+        if((10+cycle)%10 == 4){
+            spawn(12, 1000, -0.0035, 0.0, PI, 0.0, vec2{0.48 - doomMod, -0.5});
+            spawn(12, 1000, -0.0035, 0.0, PI, 0.0, vec2{-0.48 + doomMod, -0.5});
+            spawn(12, 1000, -0.0035, 0.0, -PI / 2.0, 0.0, vec2{-0.5, -0.48 + 1.8*doomMod});
+            spawn(12, 1000, -0.0035, 0.0, PI / 2.0, 0.0, vec2{0.5, -0.48 + 1.8*doomMod});
+            doomMod+= 0.0028;
+        }else if((10+cycle)%10 == 7){
+            float rand1 = (2*float(rand())/float(RAND_MAX) - 1) * 0.5;
+            spawn(9, 1000, -0.0015,0.0, (PI + 1.0)/2.0, 0.1, vec2{0.5, rand1});
+        }else if((10+cycle)%10 == 8){
+            float rand1 = (2*float(rand())/float(RAND_MAX) - 1) * 0.5;
+            spawn(8, 1000, -0.0015,0.0, -(PI + 1.0)/2.0, 0.1, vec2{-0.5, rand1});
+        }
+
+
+    }else if(health <= 0.6){
+        if((5+cycle)%5 == 1){
+            float offset = 0.15 * sin(2*PI * float(cycle)/200.0);
+            int rand1 = 10 + (rand()%2);
+            spawn(rand1, 1000, -0.0025, -0.00008, 0.0, 0.0, vec2{0.3 + offset, origin.y});
+            rand1 = 10 + (rand()%2);
+            spawn(rand1, 1000, -0.0025, -0.00008, 0.0, 0.0, vec2{0.32 + offset, origin.y});
+            rand1 = 10 + (rand()%2);
+            spawn(rand1, 1000, -0.0025, -0.00008, 0.0, 0.0, vec2{-0.32 + offset, origin.y});
+            rand1 = 10 + (rand()%2);
+            spawn(rand1, 1000, -0.0025, -0.00008, 0.0, 0.0, vec2{-0.3 + offset, origin.y});
+        }else if((5+cycle)%5 > 2){
+            float rand2 = (2*float(rand())/float(RAND_MAX) - 1) * 0.5;
+            spawn(9, 1000, 0.0008, 0.00001, 0.0, 0.10, vec2{rand2, -0.5} );
+        }
+
+
+
+    }else{
+        if((10+cycle)%10 == 0){
+
+            //vec2 v = vec2{0,0};
+            //vec2 a = vec2{0,0};
+            float cycleIterator = 0.0;
+            for(int i = 0;i < 5; i++){
+                spawn(10, 1000, -0.0015, 0.0000, fireAngle + cycleIterator, 0.0, vec2{origin.x + 0.4, origin.y});
+                spawn(11, 1000, -0.0015, 0.0000, -(fireAngle + cycleIterator), 0.0, vec2{origin.x - 0.4, origin.y});
+                cycleIterator+= PI*0.4;
+            }
+
+        }
+        if(cycle%5 == 2){
+            float rand1 = (2*float(rand())/float(RAND_MAX) - 1) * 0.5;
+            spawn(8, 1000, -0.0009, 0.0,0.0,0.0,vec2{rand1, origin.y});
+        }
+
+    }
+}
+
+
+
+void bulletpool::deathThroes(int type, vec2 origin, vec2 plyPos)
+{
+    switch(type){
+    case 0:
+        dieOcto(origin, plyPos);
+        break;
+    case 1:
+        diePiranha(origin, plyPos);
+        break;
+    case 2:
+        diePuffer(origin, plyPos);
+        break;
+    case 3:
+        dieTurt(origin, plyPos);
+        break;
+    case 4:
+        dieUrchin(origin, plyPos);
+        break;
+    case 5:
+        dieBoss(origin, plyPos);
+        break;
+
+
+    }
+}
+
+void bulletpool::dieOcto(vec2 origin, vec2 plyPos)
+{
+    float cycleIterator = 0.0;
+    for(int i = 0; i < 8; i++){
+        spawn(5, 1000, -0.0015, 0.0, cycleIterator + 0.09, 0.0, origin);
+        spawn(5, 1000, -0.0016, 0.0, cycleIterator + 0.07, 0.0, origin);
+        spawn(5, 1000, -0.0018, 0.0, cycleIterator + 0.04, 0.0, origin);
+        spawn(5, 1000, -0.002, 0.0, cycleIterator, 0.0, origin);
+        spawn(5, 1000, -0.0018, 0.0, cycleIterator - 0.04, 0.0, origin);
+        spawn(5, 1000, -0.0016, 0.0, cycleIterator - 0.07, 0.0, origin);
+        spawn(5, 1000, -0.0015, 0.0, cycleIterator - 0.09, 0.0, origin);
+
+        for(int j = 0; j < 12; j++){
+            float rand1 = float(rand())/float(RAND_MAX) * 2 * PI;
+            float rand2 = float(rand())/float(RAND_MAX) * 0.0003;
+            spawn(2, 250, 0.0004 + rand2, 0.0, rand1, 0.0, origin);
+        }
+
+        cycleIterator+= PI*0.25;
+    }
+}
+
+void bulletpool::diePiranha(vec2 origin, vec2 plyPos)
+{
+    for(int i = 0;i < 35; i++){
+        float randTheta = (2*float(rand())/float(RAND_MAX) - 1);
+        float rand1 = (2*float(rand())/float(RAND_MAX) - 1) * 0.0004;
+        spawn(3, 1000, -0.0010 + rand1, -0.00005, 0.3*randTheta, randTheta * 0.1, origin);
+    }
+}
+
+void bulletpool::diePuffer(vec2 origin, vec2 plyPos)
+{
+    for(int i = 0; i < 20; i++){
+        float randTheta = (2*float(rand())/float(RAND_MAX) - 1);
+        spawn(2, 1000, 0.0004 * randTheta + 0.0008, 0, 2*PI*randTheta, 0.0, origin);
+        spawn(3, 1000, -0.001, 0, PI * (float(i)/10.0), 0.0, origin);
+        spawn(3, 1000, -0.0009, 0, PI * ((float(i) + 0.5)/10.0), 0.0, origin);
+        randTheta = (2*float(rand())/float(RAND_MAX) - 1);
+        spawn(3, 1000, -0.00085, 0, PI * 2 * randTheta, 0.0, origin);
+    }
+}
+
+void bulletpool::dieTurt(vec2 origin, vec2 plyPos)
+{
+    float tOff = -0.00012;
+    float rOff = 0.00011;
+    for(int i = 0; i < 60; i++){
+        float randTheta = 2 * PI *(2*float(rand())/float(RAND_MAX) - 1);
+        float rand2 = rOff * (2*float(rand())/float(RAND_MAX) - 1);
+        spawn(2, 1500, tOff + rand2, 0, randTheta, 0.015, origin);
+
+        randTheta = 2 * PI *(2*float(rand())/float(RAND_MAX) - 1);
+        rand2 = rOff * (2*float(rand())/float(RAND_MAX) - 1);
+        spawn(2, 1500, tOff + rand2, 0, randTheta, 0.015, origin);
+
+        randTheta = 2 * PI *(2*float(rand())/float(RAND_MAX) - 1);
+        rand2 = rOff * (2*float(rand())/float(RAND_MAX) - 1);
+        spawn(1, 1500, tOff + rand2, 0, randTheta, 0.015, origin);
+
+        randTheta = 2 * PI *(2*float(rand())/float(RAND_MAX) - 1);
+        rand2 = rOff * (2*float(rand())/float(RAND_MAX) - 1);
+        spawn(1, 1500, tOff + rand2, 0, randTheta, 0.015, origin);
+    }
+}
+
+void bulletpool::dieBoss(vec2 origin, vec2 plyPos)
+{
+    for(int i = 0; i < 500; i++){
+        int rand1 = rand()%(typeCount - 1);
+        float rand2 =  PI * 0.5 *(2*float(rand())/float(RAND_MAX) - 1);
+        float rand3 = 0.5 * (2*float(rand())/float(RAND_MAX) - 1);
+        float rand4 = (2*float(rand())/float(RAND_MAX) - 1) * 0.0005;
+        spawn(rand1, 1000, -0.0012 + rand4, 0, rand2, 0.0, vec2{origin.x + rand3, origin.y + 0.5*(135.0/1080.0)});
+    }
+}
+
+void bulletpool::dieUrchin(vec2 origin, vec2 plyPos)
+{
+    for(int i = 0; i < 20; i++){
+        spawn(3, 1000, -0.001, 0, PI * (float(i)/10.0), 0.0, origin);
+        spawn(6, 1000, -0.001, 0, PI * ((float(i) + 0.5)/10.0), 0.0, origin);
+    }
+}
+
+
+/*
 void bulletpool::doomSpiral(int cycle, vec2 origin)
 {
     if((10+cycle)%10 == 0){
@@ -430,7 +753,7 @@ void bulletpool::aimed(int cycle, vec2 origin, vec2 plyPos)
 
     }
 
-}
+}*/
 
 
 

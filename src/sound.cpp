@@ -22,7 +22,11 @@ void sound::playMusic(char* File)
 void sound::playSound(char* File)
 {
     if(!engine->isCurrentlyPlaying(File)){
-        engine->play2D(File,false,false);
+        ISound* sou = engine->play2D(File,false,false);
+        if (sou){
+            //sou->setVolume(0.5);
+        }
+
     }
 
 }
@@ -49,9 +53,16 @@ void sound::setTrack(int newTrack)
 
 }
 
-
-int sound::initSounds()
+void sound::pop()
 {
+    engine->play2D(popSound);
+}
+
+
+int sound::initMusic()
+{
+    popSound = engine->addSoundSourceFromFile("sounds/bubblePop.mp3");
+    popSound->setDefaultVolume(0.18f);
     tracks = new char*[6];
     tracks[0] = "sounds/level1.mp3";
     tracks[1] = "sounds/level2.mp3";

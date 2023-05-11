@@ -81,8 +81,7 @@ void actor::setSize(float szX, float szY)
 void actor::hit(float dmg)
 {
     HP -= dmg;
-    if(HP <= 0){
-        snds1->playSound("sounds/bubblePop.mp3");
+    if(HP <= 0.0){
         actionTrigger = DEAD;
     }
 }

@@ -19,13 +19,15 @@ class sound
         void playMusic(char *);
         void playSound(char *);
         void pauseSound(char *);
-        int initSounds();
+        void pop();
+        int initMusic();
         void tickSounds();
         void setTrack(int);
         char** tracks;
         int currentTrack;
         ISound *music;
         char** sfx;
+        ISoundSource* popSound;
 
 
     protected:

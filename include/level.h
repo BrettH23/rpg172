@@ -6,8 +6,9 @@
 #include "player.h"
 #include "bulletpool.h"
 #include "textureloader.h"
+#include "sound.h"
 
-enum behaviorType{STILL, ZAG, ORBIT, FALL, BOSS, INACTIVE};
+enum behaviorType{STILL, ZAG, ORBIT, FALL, INACTIVE};
 
 
 typedef struct levelData{
@@ -28,7 +29,7 @@ class level
         level();
         virtual ~level();
 
-        void init(player*, bulletpool*, bulletpool*);
+        void init(player*, bulletpool*, bulletpool*, sound*);
         void initLevel(int, levelData&);
         void buildLevels();
         void loadLevel(int);
@@ -68,6 +69,7 @@ class level
         enemy *enemies;
         behaviorType *eData;
         float tOffset;
+        sound *sfxEngine;
 
         player *ply;
         bulletpool *eBullets;
@@ -76,7 +78,7 @@ class level
         GLuint* eTextures;
         vec2* eScales;
         float* eMaxHP;
-        int eTypes;
+        int enemyTypes;
 
         textureLoader *tLoad = new textureLoader();
 

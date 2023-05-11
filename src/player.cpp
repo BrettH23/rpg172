@@ -26,7 +26,7 @@ player::player()
     theta = 0.0;
 
     maxHP = 4.0;
-    attack = 1.0;
+    attack = 0.6;
 
     invul = 0;
 
@@ -140,6 +140,7 @@ void player::actions(acts action)
     {
         case DEAD:
             firing = false;
+            firing1 = false;
         break;
 
 

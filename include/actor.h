@@ -3,7 +3,6 @@
 
 #include <GL/gl.h>
 #include<textureloader.h>
-#include<sound.h>
 
 #include <commons.h>
 
@@ -59,7 +58,6 @@ class actor
 
         frame* animations;
         frame* curFrame;
-        sound* snds1 = new sound();
 
 
 

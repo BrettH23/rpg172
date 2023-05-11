@@ -64,13 +64,28 @@ class bulletpool
         void spawn(int, int, float, float, float, float, vec2);
         void die(int, dll*);
         void clearAll();
+        void fadeAll();
         void tick();
         bool checkBounds(int, int);
-        float getDamage(vec2, vec2);
+        float getDamage(vec2, vec2, bool);
 
         void playerFire(int, int, vec2);
         void fire(int, int, vec2, vec2, float);
         void fireOcto(int, vec2, vec2, float);
+        void firePiranha(int, vec2, vec2, float);
+        void firePuffer(int, vec2, vec2, float);
+        void fireTurt(int, vec2, vec2, float);
+        void fireBoss(int, vec2, vec2, float);
+
+        void deathThroes(int, vec2, vec2);
+        void dieOcto(vec2, vec2);
+        void diePiranha(vec2, vec2);
+        void diePuffer(vec2, vec2);
+        void dieTurt(vec2, vec2);
+        void dieBoss(vec2, vec2);
+        void dieUrchin(vec2, vec2);
+
+
         void doomSpiral(int, vec2);
         void aimed(int, vec2, vec2);
 

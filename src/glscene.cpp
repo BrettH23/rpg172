@@ -21,6 +21,7 @@ parallax *waves = new parallax();
 player *ply = new player();
 bulletpool *eBullets = new bulletpool();
 bulletpool *pBullets = new bulletpool();
+sound *musicHandler = new sound();
 sound *snds = new sound();
 font *writer = new font();
 level *lv = new level();
@@ -71,6 +72,7 @@ void GLScene::dumbDestructor()
     delete eBullets;
     delete pBullets;
     delete snds;
+    delete musicHandler;
     delete writer;
     delete lv;
     delete menuHud;
@@ -100,7 +102,7 @@ int GLScene::drawScene()
     double timePassed = double(clock()-timer)/double(CLOCKS_PER_SEC);
     if(timePassed >= 0.015){
         menuHud->tick();
-        snds->tickSounds();
+        musicHandler->tickSounds();
         if(!menuHud->paused){
             timer = clock();
             //std::cout << int(clock()-timer) << ", " << timePassed << std::endl;
@@ -168,7 +170,7 @@ int GLScene::drawScene()
 
         glPushMatrix();
 
-            prLX->drawSquare(screenHeight*1.5,screenHeight);  //constrained to 3/4 ratio to emulate certain bullet hell games, parallax is scaled to be height of 1.0
+            prLX->drawSquare(screenHeight,screenHeight);  //constrained to 3/4 ratio to emulate certain bullet hell games, parallax is scaled to be height of 1.0
 
         glPopMatrix();
 
@@ -217,6 +219,20 @@ int GLScene::drawScene()
             drawSquare(-1.0, 0.0, 0.5);
 
             glColor3f(1.0, 1.0, 1.0);
+            glEnable(GL_TEXTURE_2D);
+        glPopMatrix();
+        glPushMatrix();
+            glDisable(GL_TEXTURE_2D);
+            for(int i = 0; i < 4; i++){
+                if(ply->HP > i){
+                    glColor3f(0.8, 0.0, 0.0);
+                }else{
+                    glColor3f(0.8, 0.8, 0.8);
+                }
+
+                drawSquare(-0.65, 0.12 * float(i) - 0.18,0.05);
+                glColor3f(1.0, 1.0, 1.0);
+            }
             glEnable(GL_TEXTURE_2D);
         glPopMatrix();
 
@@ -299,27 +315,27 @@ int GLScene::GLinit()
     prLX->initParallax("images/sprites/wavebg.png");
     waves->initParallax("images/sprites/waveoverlay.png");
     ply->playerInit("images/sprites/player.png");
+
     ply->setSize(0.03, 0.0419);
 
     //eBullets->tLoad->loadTexture("images/bullets/bullet1.png", eBullets->bulletType[0].tex);
     eBullets->initE(1000);
     pBullets->initP(100);
 
-    snds->initSounds();
-    snds->engine->stopAllSounds();
-    snds->setTrack(5);
+    musicHandler->initMusic();
+    musicHandler->engine->stopAllSounds();
+    musicHandler->setTrack(5);
 
     writer->initFonts("images/jokerman.png","images/jokerman_outline.png");
     writer->kerning = -0.5;
-    menuHud->init(writer, lv, snds);
+    menuHud->init(writer, lv, musicHandler);
 
-    lv->init(ply, eBullets, pBullets);
-    lv->loadLevel(0);
+    lv->init(ply, eBullets, pBullets, musicHandler);
+    //lv->loadLevel(0);
 
     glGenTextures(1, &tempTex);
 
     timer = clock();
-
 
     //snds->playMusic("sounds/gameSound.mp3");
 
@@ -354,7 +370,7 @@ int GLScene::winMsg(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     }
 
     if(uMsg == WM_LBUTTONDOWN){
-
+        ply->firing1 = true;
         menuHud->click();
     }
     if(uMsg == WM_RBUTTONDOWN){
@@ -364,6 +380,7 @@ int GLScene::winMsg(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
     }
     if(uMsg == WM_LBUTTONUP){
+        ply->firing1 = false;
         KbMs->mouseBtnUp();
     }
     if(uMsg == WM_RBUTTONUP){
