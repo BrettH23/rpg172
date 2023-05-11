@@ -41,8 +41,11 @@ void sound::tickSounds()
 
 void sound::setTrack(int x0)
 {
-    engine->stopAllSounds();
-    currentTrack = x0;
+    if(x0 != currentTrack){
+        engine->stopAllSounds();
+        currentTrack = x0;
+    }
+
 }
 
 

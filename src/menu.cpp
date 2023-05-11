@@ -324,7 +324,7 @@ void menu::hover(float mouseX, float mouseY)
     }
 }
 
-void menu::click(sound *snds)
+void menu::click()
 {
     if(!paused) return;
     page *whichOverlay;
@@ -335,7 +335,7 @@ void menu::click(sound *snds)
     }
     for(int i = 0; i < whichOverlay->totalElements; i++){
         if(whichOverlay->elements[i].selected && whichOverlay->elements[i].elemType != NOACTION){
-            snds->playSound("sounds/clickSound2.mp3");
+            sfxEngine->playSound("sounds/clickSound2.mp3");
             whichOverlay->elements[i].selected = false;
             switch(whichOverlay->elements[i].elemType){
             case PAGESET:

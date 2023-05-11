@@ -64,7 +64,7 @@ class menu
         menuElement generateElement(e_type, int, int, int, vec2, vec3, float, float, char*);
         void drawElement(menuElement&);
         void hover(float, float);
-        void click(sound *);
+        void click();
         void escPressed();
         void tick();
         void setRankColor(char);

@@ -304,7 +304,7 @@ int GLScene::GLinit()
     pBullets->initP(100);
 
     snds->initSounds();
-
+    snds->engine->stopAllSounds();
     snds->setTrack(5);
 
     writer->initFonts("images/jokerman.png","images/jokerman_outline.png");
@@ -318,8 +318,7 @@ int GLScene::GLinit()
 
     timer = clock();
 
-    snds->initSounds();
-    snds->engine->stopAllSounds();
+
     //snds->playMusic("sounds/gameSound.mp3");
 
     return true;
@@ -354,7 +353,7 @@ int GLScene::winMsg(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
     if(uMsg == WM_LBUTTONDOWN){
 
-        menuHud->click(snds);
+        menuHud->click();
     }
     if(uMsg == WM_RBUTTONDOWN){
 
