@@ -373,7 +373,7 @@ void bulletpool::fireOcto(int cycle, vec2 origin, vec2 player, float health)
     if(health <= 0.3){
         typeMod = 5;
     }
-    if((cycle) % 40 == 7){
+    if((cycle) % 50 == 7){
         float mainOffset = PI * 0.05 * float(cycle / 40);
         float cycleIterator = 0.0;
         for(int i = 0;i < 8; i++){
@@ -382,7 +382,7 @@ void bulletpool::fireOcto(int cycle, vec2 origin, vec2 player, float health)
         }
 
     }
-    if(health <=0.6 && (cycle) % 40 == 27){
+    if(health <=0.6 && (cycle) % 50 == 27){
         float mainOffset = -PI * 0.05 * float(cycle / 40);
         float cycleIterator = 0.0;
         for(int i = 0;i < 8; i++){
