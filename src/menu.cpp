@@ -210,6 +210,7 @@ void menu::drawElement(menuElement& m)
             writer->drawLine("Rank:", m.fontSize, xOffset, yOffset, 6, false );
             writer->drawLine(&levels->finalRank, m.fontSize, xOffset + m.fontSize*11 + m.fontSize*writer->kerning*(10), yOffset, 1, false );
         }else{
+            //snds2->playSound("sounds/defeat.mp3");
             writer->drawLineCentered("DEAD",m.fontSize*2, m.bounds.center.x, m.bounds.center.y,0,4, true);
         }
 

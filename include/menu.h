@@ -71,6 +71,7 @@ class menu
         float xMin, xMax, yMin, yMax;
 
         int currentState;
+        sound *snds2 = new sound();
 
     protected:
 
