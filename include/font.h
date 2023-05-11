@@ -12,11 +12,11 @@ class font
         font();
         virtual ~font();
 
-        void initFonts(char*);
+        void initFonts(char*,char*);
         void buildFonts(char*);
         void drawFonts(int);
-        void drawLine(char*, float, float);
-        void drawLineCentered(char*, float, float, float, int, int);
+        void drawLine(char*, float, float, float, int, bool);
+        void drawLineCentered(char*, float, float, float, int, int, bool);
         float defaultScale;
         float kerning;
 
@@ -26,6 +26,7 @@ class font
 
         int cCount;
         GLuint tex;
+        GLuint texOutlined;
         textureLoader* tLoad = new textureLoader();
 
         float oneOverHex = 1.0/16.0;    //precalc because mult is faster than div

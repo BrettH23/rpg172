@@ -15,16 +15,13 @@
 
 #include "time.h"
 
-Model *myFirstModel = new Model();
 Inputs *KbMs = new Inputs();
 parallax *prLX = new parallax();
 parallax *waves = new parallax();
 player *ply = new player();
-checkCollision *hit = new checkCollision();
 bulletpool *eBullets = new bulletpool();
 bulletpool *pBullets = new bulletpool();
 sound *snds = new sound();
-sound *snds2 = new sound();
 font *writer = new font();
 level *lv = new level();
 menu *menuHud = new menu();
@@ -35,7 +32,6 @@ clock_t timer;
 
 GLuint tempTex;
 
-bool gameActive = false;
 
 GLubyte* collider = new GLubyte[1];
 
@@ -52,8 +48,34 @@ GLScene::GLScene()
 
 GLScene::~GLScene()
 {
-
+    /*
+    delete KbMs;
+    delete prLX;
+    delete waves;
+    delete ply;
+    delete eBullets;
+    delete pBullets;
+    delete snds;
+    delete writer;
+    delete lv;
+    delete menuHud;*/
 }
+
+void GLScene::dumbDestructor()
+{
+    delete KbMs;
+
+    delete prLX;
+    delete waves;
+    delete ply;
+    delete eBullets;
+    delete pBullets;
+    delete snds;
+    delete writer;
+    delete lv;
+    delete menuHud;
+}
+
 
 void drawSquare(float x, float y, float s){
     glBegin(GL_QUADS);
@@ -66,31 +88,39 @@ void drawSquare(float x, float y, float s){
 
 int GLScene::drawScene()
 {
-
+    if(menuHud->quit){
+        quit = true;
+    }
 
     int coordY = screenHeight-int((0.5-ply->position.y) * float(screenHeight))-1;
     int coordX = int((0.5+ply->position.x) * float(screenHeight)) + (screenWidth - screenHeight)/2;
     //*
+
     double timePassed = double(clock()-timer)/double(CLOCKS_PER_SEC);
-    if(timePassed >= 0.015 && gameActive){
-        timer = clock();
-        //std::cout << int(clock()-timer) << ", " << timePassed << std::endl;
-        prLX->scroll(true, "y", 0.002); //autoscroll
-        waves->scroll(true, "y", 0.0015+0.0008*sin(waveCycle));
-        //ply->moveP();   //allows player to move, would be in idle if we had one
-        if(ply->invul <=0 && int(collider[0]) < 25){
-            ply->hit(1.0);
-            ply->invul = 100;
+    if(timePassed >= 0.015){
+        menuHud->tick();
+        if(!menuHud->paused){
+            timer = clock();
+            //std::cout << int(clock()-timer) << ", " << timePassed << std::endl;
+            prLX->scroll(true, "y", 0.002); //autoscroll
+            waves->scroll(true, "y", 0.0015+0.0008*sin(waveCycle));
+            //ply->moveP();   //allows player to move, would be in idle if we had one
+            if(ply->invul <=0 && int(collider[0]) < 25){
+                lv->totalHits++;
+                ply->hit(1.0);
+                ply->invul = 100;
+            }
+            ply->follow(mouseX, mouseY);
+            ply->tick();
+            waveCycle+= 0.02;
+            if(waveCycle >= 2*PI){ //cycles based on 3 second intervals
+                waveCycle -= 2*PI;
+            }
+            lv->tickLevel();
+            eBullets->tick();
+            pBullets->tick();
         }
-        ply->follow(mouseX, mouseY);
-        ply->tick();
-        waveCycle+= 0.02;
-        if(waveCycle >= 2*PI){ //cycles based on 3 second intervals
-            waveCycle -= 2*PI;
-        }
-        lv->tickLevel();
-        eBullets->tick();
-        pBullets->tick();
+
     }
 
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
@@ -179,7 +209,7 @@ int GLScene::drawScene()
 
         glPushMatrix();
             glDisable(GL_TEXTURE_2D);
-            glColor3f(0.5, 0.5, 0.5);
+            glColor3f(0.0, 0.0, 0.0);
 
             drawSquare(1.0, 0.0, 0.5);
             drawSquare(-1.0, 0.0, 0.5);
@@ -189,9 +219,15 @@ int GLScene::drawScene()
         glPopMatrix();
 
         glPushMatrix();
-            writer->drawLineCentered("MWM0", 0.05, 0.65,0.1, 1,3);
-            writer->drawLine("HAHA", 0.6,0.0);
-            writer->drawLine("yeah", 0.6,-0.1);
+            char buffer[33];
+            char *buf2;
+            buf2 = itoa(lv->currentScore, buffer, 10);
+            writer->drawLineCentered(buf2, 0.05, 0.65,0.1, 0, strlen(buf2), true);
+            buf2 = itoa(lv->finalTime, buffer, 10);
+            writer->drawLineCentered(buf2, 0.05, 0.65,0.0, 0, strlen(buf2), true);
+            buf2 = itoa(lv->totalHits, buffer, 10);
+            writer->drawLineCentered(buf2, 0.05, 0.65,-0.1, 0, strlen(buf2), true);
+
         glPopMatrix();
 
         glPushMatrix();
@@ -200,9 +236,9 @@ int GLScene::drawScene()
         glPopMatrix();
 
         glPushMatrix();
-            ply->drawCursor(mouseX, mouseY, gameActive);
-            menuHud->drawPage(1.0,1.0);
-            if(!gameActive){
+            ply->drawCursor(mouseX, mouseY, !menuHud->paused);
+            menuHud->drawPage(1.5,1.0);
+            if(menuHud->paused){
                 drawCursor();
             }
         glPopMatrix();
@@ -219,15 +255,26 @@ int GLScene::drawScene()
 
 void GLScene::drawCursor()
 {
-    float c_size = 0.008;
     glPushMatrix();
-    glBindTexture(GL_TEXTURE_2D, pBullets->bulletType->tex);
+
+    vec2 c_size = vec2{ply->sizeRadius.x * 0.5, ply->sizeRadius.y};
+    glBindTexture(GL_TEXTURE_2D, ply->tex);
+
     glBegin(GL_QUADS);
-    glTexCoord2f(0,0);glVertex2f(mouseX - c_size, mouseY + c_size);
-    glTexCoord2f(1,0);glVertex2f(mouseX + c_size, mouseY + c_size);
-    glTexCoord2f(1,1);glVertex2f(mouseX + c_size, mouseY - c_size);
-    glTexCoord2f(0,1);glVertex2f(mouseX - c_size, mouseY - c_size);
+    float twothirds = 2.0/3.0;
+    glTexCoord2f(twothirds,0);glVertex2f(mouseX - c_size.x, mouseY - c_size.x);
+    glTexCoord2f(1,0);glVertex2f(mouseX + c_size.x, mouseY + c_size.x);
+    glTexCoord2f(1,1);glVertex2f(mouseX + c_size.x + c_size.y, mouseY + c_size.x - c_size.y);
+    glTexCoord2f(twothirds,1);glVertex2f(mouseX - c_size.x + c_size.y, mouseY - c_size.x - c_size.y);
     glEnd();
+
+    glDisable(GL_TEXTURE_2D);
+    glPointSize(4.0);
+    glBegin(GL_POINTS);
+    glVertex2f(mouseX, mouseY);
+    glEnd();
+    glEnable(GL_TEXTURE_2D);
+
     glPopMatrix();
 }
 
@@ -256,9 +303,9 @@ int GLScene::GLinit()
     pBullets->initP(100);
 
 
-    writer->initFonts("images/jokerman.png");
-    writer->kerning = -0.35;
-    menuHud->init(writer);
+    writer->initFonts("images/jokerman.png","images/jokerman_outline.png");
+    writer->kerning = -0.5;
+    menuHud->init(writer, lv);
 
     lv->init(ply, eBullets, pBullets);
     lv->loadLevel(0);
@@ -269,7 +316,7 @@ int GLScene::GLinit()
 
     snds->initSounds();
     snds->engine->stopAllSounds();
-    snds->playMusic("sounds/gameSound.mp3");
+    //snds->playMusic("sounds/gameSound.mp3");
 
     return true;
 }
@@ -293,14 +340,8 @@ int GLScene::winMsg(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
     if(uMsg == WM_KEYDOWN){
         KbMs->keyPlayer(ply);
-        if(wParam == 'm' || wParam == 'M'){
-            gameActive = !gameActive;
-        }
-        if(wParam == 'n' || wParam == 'N'){
-            menuHud->currentState++;
-            if(menuHud->currentState > 7){
-                menuHud->currentState = 0;
-            }
+        if(wParam == VK_ESCAPE){
+            menuHud->escPressed();
         }
     }
     if(uMsg == WM_KEYUP){
@@ -308,16 +349,14 @@ int GLScene::winMsg(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
     }
 
     if(uMsg == WM_LBUTTONDOWN){
-        KbMs->mouseBtnDown(myFirstModel,LOWORD(lParam),HIWORD(lParam));
-        menuHud->click(snds);
-        //snds2->playSound("sounds/clickSound.mp3");
 
+        menuHud->click(snds);
     }
     if(uMsg == WM_RBUTTONDOWN){
-        KbMs->mouseBtnDown(myFirstModel,LOWORD(lParam),HIWORD(lParam));
+
     }
     if(uMsg == WM_MBUTTONDOWN){
-        KbMs->mouseBtnDown(myFirstModel,LOWORD(lParam),HIWORD(lParam));
+
     }
     if(uMsg == WM_LBUTTONUP){
         KbMs->mouseBtnUp();
@@ -329,79 +368,13 @@ int GLScene::winMsg(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
         KbMs->mouseBtnUp();
     }
     if(uMsg == WM_MOUSEMOVE){
-        KbMs->mouseMove(myFirstModel,LOWORD(lParam),HIWORD(lParam));
+
         mouseX = (double(LOWORD(lParam))+1.0) / double(screenWidth) - 0.5;
         mouseX *= float(screenWidth)/float(screenHeight);
         mouseY = 0.5-(double(HIWORD(lParam))+1.0) / double(screenHeight);
         menuHud->hover(mouseX, mouseY);
     }
     if(uMsg == WM_MOUSEWHEEL){
-        KbMs->mouseWheel(myFirstModel,(double)GET_WHEEL_DELTA_WPARAM(wParam));
-    }
-
-    if(wParam == '1'){
-        lv->loadLevel(1);
-    }
-    if(wParam == 'n'){
-    if(LANDINGPAGE == true)
-    {
-        setMenuPage();
-    }else{
-    LANDINGPAGE = false;
-    MENUPAGE = false;
-    GAMEPAGE = false;
-    HELPPAGE = false;
-    CREDITPAGE = false;
-    QUIT = false;
-    GAMEOVER = false;
-    INTRO = false;
-    gameActive = true;
-    }
-    }
-    if(wParam == 'h'){
-        //gameActive = false;
-        //setHelpPage();
-        if(gameActive == true){
-            gameActive = false;
-            setHelpPage();
-        }
-        else{
-            setHelpPage();
-        }
-    }
-    */
-    if(wParam == 's' || wParam == 'S'){
-        setMenuPage();
-        gameActive = false;
-    }
-    if((wParam == 'n' || wParam == 'N')){
-        gameActive = true;
-    }
-    if(wParam == 'h' || wParam == 'H'){
-        setHelpPage();
-        gameActive = false;
-    }
-    if(wParam == 'b' || wParam == 'B'){
-        setMenuPage();
-        gameActive = false;
-    }
-    if(wParam == 'c' || wParam == 'C'){
-        setCreditPage();
-        gameActive = false;
-    }
-    if((wParam == 'p' || wParam == 'P') && gameActive == true){
-        setQuitPage();
-        gameActive = false;
-    }
-    if((wParam == 'r' || wParam == 'R') && QUIT == true){
-        setGamePage();
-        gameActive = true;
-    }
-    if((wParam == 'M' || wParam == 'm') && QUIT == true){
-        setMenuPage();
-        gameActive = false;
-    }
-        if((wParam == 'M' || wParam == 'm') && gameActive == true){
 
     }
 

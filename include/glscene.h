@@ -17,6 +17,8 @@ class GLScene
         int drawScene();   //main render
         int GLinit();       //initialize scene
         void GLReSize(GLsizei, GLsizei);    //resize callback function
+        bool quit = false;
+        void dumbDestructor();
 
         void drawCursor();
 

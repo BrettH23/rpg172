@@ -2,13 +2,14 @@
 #define MENU_H
 
 #include "commons.h"
+#include <sound.h>
 #include<textureloader.h>
-#include<sound.h>
 #include <GL/gl.h>
 #include "font.h"
+#include "level.h"
 
-enum e_type{NOACTION, PAGESET, LEVELSET, UPGRADESET, SETEQUIP, QUIT};
-enum state_p{GAMEPAGE, LANDINGPAGE, MAINMENU, LEVELSELECT, HELPPAGE, CREDITPAGE, PAUSE, LEVELEND};
+enum e_type{NOACTION, HEADER, PAGESET, LEVELSET, UPGRADESET, SETEQUIP, QUITGAME, OPENQUIT, CLOSEQUIT, RESULTSCREEN};
+enum state_p{GAMEPAGE, LANDINGPAGE, MAINMENU, LEVELSELECT, HELPPAGE, CREDITPAGE, PAUSE, LEVELEND, QUITMENU};
 
 typedef struct v_bounds{
     vec2 center;
@@ -22,9 +23,12 @@ typedef struct menuElement{
     int lineCount;
     int lineLength;
     bool selected;
+    bool outlines;
     float fontSize;
     char *text;
     vec3 textHue;
+    vec3 bgHue;
+    float bgAlpha;
     v_bounds bounds;
 };
 
@@ -46,18 +50,23 @@ class menu
         textureLoader* tLoad = new textureLoader();
 
         page *pages;
+        page quitOverlay;
         font *writer;
 
-        bool gameActive;
+        bool paused;
+        bool quit;
+        bool checkQuit;
 
-        GLvoid init(font*);
+        GLvoid init(font*, level*);
         GLvoid drawPage(GLfloat, GLfloat);
-        menuElement generateElement(e_type, int, int, int, vec2, float, float, char*);
+        menuElement generateElement(e_type, int, int, int, vec2, vec3, float, float, char*);
         void drawElement(menuElement&);
         void hover(float, float);
         void click(sound *);
         void escPressed();
+        void tick();
         vec2 mousePos;
+        level *levels;
 
         float xMin, xMax, yMin, yMax;
 

@@ -7,15 +7,16 @@
 #include "bulletpool.h"
 #include "textureloader.h"
 
-enum behaviorType{STILL, ZAG, ORBIT, INACTIVE};
+enum behaviorType{STILL, ZAG, ORBIT, FALL, BOSS, INACTIVE};
 
 
 typedef struct levelData{
+    char scoreRank;
     int highScore;
     int eCount;
-
     int *eTypes;
     float *thetas;
+    float par;
     behaviorType *behs;
     vec2 *origins;
     vec2 *mods;
@@ -34,15 +35,33 @@ class level
         void tickLevel();
         void drawEnemies();
         void drawEnemyMasks();
-        int endLevel();
+        float getTime(bool);
+        int endLevel(bool);
 
         bool levelLive;
+        bool levelEnding;
+        bool victory;
+
         int currentLevel;
         int maxEnemies;
         int totalLevels;
         int bulletCycle;
+        int progress;
+        int delay;
+        int endDelay;
 
-        clock_t timer;
+        char finalRank;
+
+        clock_t levelStart;
+
+        float finalTime;
+        int currentScore;
+        int maxKillScore;
+        int totalHits;
+
+        int finalScore;
+        int finalTimeBonus;
+        int finalHitBonus;
 
         levelData *levelList;
 

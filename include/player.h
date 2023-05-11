@@ -30,6 +30,7 @@ class player : public actor
         char playerDir; //determine direction including up and down
 
         int frameLimiter;
+        int curX;
 
         /*
         void doBullet();

@@ -24,6 +24,7 @@ void sound::playSound(char* File)
     if(!engine->isCurrentlyPlaying(File)){
         engine->play2D(File,false,false);
     }
+
 }
 
 void sound::pauseSound(char* File)

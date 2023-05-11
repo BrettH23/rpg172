@@ -13,7 +13,12 @@ level::~level()
 
 void level::init(player *p, bulletpool *eB, bulletpool *pB)
 {
+    delay = 0;
+    progress = 0;
     eTypes = 5;
+    totalHits = 0;
+    currentScore = 0;
+    finalRank = 'F';
     ply = p;
     eBullets = eB;
     pBullets = pB;
@@ -48,7 +53,8 @@ void level::init(player *p, bulletpool *eB, bulletpool *pB)
     buildLevels();
     currentLevel = -1;
     tOffset = 0.0;
-    timer = clock();
+    finalTime = 0.0;
+    levelStart = clock();
 }
 
 void level::initLevel(int n,  levelData &l)
@@ -81,6 +87,7 @@ void level::buildLevels()
         levelList[0].origins[i] = o1[i];
         levelList[0].mods[i] = m1[i];
     }
+    levelList[0].par = 30;
 
 
     initLevel(5, levelList[1]);
@@ -98,18 +105,18 @@ void level::buildLevels()
         levelList[1].origins[i] = o2[i];
         levelList[1].mods[i] = m2[i];
     }
-
+    levelList[1].par = 30;
 }
 
 void level::drawEnemies()
 {
-    if(levelLive){
-        for(int i = 0; i < maxEnemies; i++){
-            if(eData[i] != INACTIVE){
-                enemies[i].draw();
-            }
+
+    for(int i = 0; i < maxEnemies; i++){
+        if(eData[i] != INACTIVE){
+            enemies[i].draw();
         }
     }
+
 
 }
 
@@ -129,21 +136,27 @@ void level::drawEnemyMasks()
 
 void level::loadLevel(int lC)
 {
+    delay = 600;
     eBullets->clearAll();
+    pBullets->clearAll();
     tOffset = 0.0;
     bulletCycle = 0;
     levelLive = true;
+    levelEnding = false;
+    victory = false;
     currentLevel = lC;
+    maxKillScore = 0;
     levelData *l = &levelList[lC];
     for(int i = 0; i < maxEnemies; i++){
         if(i < l->eCount){
             enemies[i].tex = eTextures[l->eTypes[i]];
             enemies[i].setSize(eScales[l->eTypes[i]].x, eScales[l->eTypes[i]].y);
             eData[i] = l->behs[i];
-            enemies[i].position = {l->origins[i].x, l->origins[i].y, 0.0};
+            enemies[i].position = {l->origins[i].x, l->origins[i].y + 100.0, 0.0};
             enemies[i].type = l->eTypes[i];
             enemies[i].HP = enemies[i].maxHP = eMaxHP[enemies[i].type];
             enemies[i].actionTrigger = enemies[i].IDLE;
+            maxKillScore += 100* enemies[i].maxHP;
         }else{
             eData[i] = INACTIVE;
         }
@@ -152,8 +165,10 @@ void level::loadLevel(int lC)
     ply->position = vec3{0.0, -0.15, 0.0};
     ply->actions(ply->WALKR);
     ply->HP = ply->maxHP;
-    ply->invul = 100;
-    timer = clock();
+    ply->invul = 50;
+    totalHits = 0;
+    currentScore = 0;
+    levelStart = clock();
 }
 
 void level::tickLevel()
@@ -194,19 +209,34 @@ void level::tickLevel()
                 enemies[i].actions(enemies[i].WALKR);
             }
             enemies[i].position = {updatedX, updatedY, 0.0};
-            eBullets->fire(enemies[i].type, bulletCycle, vec2{enemies[i].position.x, enemies[i].position.y}, vec2{ply->position.x, ply->position.y});
+            if(delay > 0){
+                enemies[i].position.y+= 0.6 * (1-cos((PI/2.0) * (float(delay)/400.0)));
+                delay--;
+            }else{
+                eBullets->fire(enemies[i].type, bulletCycle, vec2{enemies[i].position.x, enemies[i].position.y}, vec2{ply->position.x, ply->position.y});
+            }
+
+
             float damageTotal = ply->attack * pBullets->getDamage(vec2{enemies[i].position.x, enemies[i].position.y}, enemies[i].sizeRadius);
             if(damageTotal > 0.0){
                 enemies[i].hit(damageTotal);
+                if(enemies[i].actionTrigger == enemies[i].DEAD){
+                    currentScore += 100 * enemies[i].maxHP;
+                }
             }
         }
         if(eData[i] == INACTIVE || enemies[i].actionTrigger == enemies[i].DEAD){
             deadEnemies++;
         }
+        finalTime = float(clock() - levelStart)/float(CLOCKS_PER_SEC);
     }
 
+    if(ply->actionTrigger == ply->DEAD){
+        endLevel(false);
+    }
     if(deadEnemies == maxEnemies){
-        endLevel();
+        victory = true;
+        endLevel(true);
     }
 
     bulletCycle++;
@@ -215,8 +245,62 @@ void level::tickLevel()
     }
 }
 
-int level::endLevel()
+
+int level::endLevel(bool win)
 {
-    levelLive = false;
-    std::cout << timer << std::endl;
+    if(!levelEnding){
+        ply->invul = 200;
+        levelEnding = true;
+        endDelay = 200;
+        if(win){
+            float timePenalty = (finalTime/levelList[currentLevel].par) - 1.0;
+            float timeBonus;
+            if(timePenalty <= 0){
+                timeBonus = 100;
+            }else if(timePenalty >= 1){
+                timeBonus = 0;
+            }else{
+                timeBonus = floor(100.0*(1.0 - timePenalty)) / 100.0;
+            }
+            float hitBonus = 0;;
+            switch(totalHits){
+            case 0:
+                hitBonus = 1.0;
+                break;
+            case 1:
+                hitBonus = 0.7;
+                break;
+            case 2:
+                hitBonus = 0.4;
+                break;
+            }
+
+            finalTimeBonus = int(maxKillScore * timeBonus/2);
+            finalHitBonus = int(maxKillScore * hitBonus / 2);
+
+            finalScore = currentScore + finalTimeBonus + finalHitBonus;
+            float rankCheck = float(finalScore) / float(maxKillScore * 2);
+            if(rankCheck >= 1.0){
+                finalRank = 'P';
+            }else if(rankCheck >= 0.92){
+                finalRank = 'S';
+            }else if(rankCheck >= 0.82){
+                finalRank = 'A';
+            }else if(rankCheck >= 0.7){
+                finalRank = 'B';
+            }else if(rankCheck >=0.50){
+                finalRank = 'C';
+            }else{
+                finalRank = 'D';
+            }
+        }
+
+    }else{
+        if(endDelay <= 0){
+            levelLive = false;
+        }
+        endDelay--;
+    }
+
+
 }

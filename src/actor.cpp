@@ -23,7 +23,7 @@ actor::~actor()   //destructor for player, needs to clear those animations
 
 
 }
-float invulStates[] = {1.0,0.7,0.4,0.7};
+float invulStates[] = {1.0,0.6,0.2,0.6};
 void actor::draw()
 {
     if(actionTrigger == DEAD){ return;}
