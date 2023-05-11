@@ -18,7 +18,7 @@ void bulletpool::initE(int c)
     poolType = ENEMY;
     cap = c;
     bullets = new bullet[cap];
-    typeCount = 2;
+    typeCount = 6;
     bulletType = new type_b[typeCount];
     dead = nullptr;
     for(int i = 0;i < cap;i++){
@@ -34,10 +34,13 @@ void bulletpool::initE(int c)
 
     fireAngle = 0.0;
 
+
     tLoad->loadTexture("images/sprites/bullets/tentacleBullet.png", bulletType[0].tex);
-    tLoad->loadTexture("images/sprites/bullets/tentacleBullet.png", bulletType[0].mask);
+    //tLoad->loadTexture("images/sprites/bullets/tentacleBullet.png", bulletType[0].mask);
     tLoad->loadTexture("images/sprites/bullets/crabBullet.png", bulletType[1].tex);
-    tLoad->loadTexture("images/sprites/bullets/crabBullet.png", bulletType[1].mask);
+    //tLoad->loadTexture("images/sprites/bullets/crabBullet.png", bulletType[1].mask);
+    tLoad->loadTexture("images/sprites/bullets/enemyBullets.png", bulletType[2].tex);
+    tLoad->loadTexture("images/sprites/bullets/spikeBullet.png", bulletType[3].tex);
 
     bulletType[0].radius = 0.021;
     bulletType[0].alive = nullptr;
@@ -48,6 +51,29 @@ void bulletpool::initE(int c)
     bulletType[1].alive = nullptr;
     bulletType[1].damage = 1.0;
     bulletType[1].hue = vec3{1.0, 0.7, 0.4};
+
+    bulletType[2].radius = 0.008;
+    bulletType[2].alive = nullptr;
+    bulletType[2].damage = 1.0;
+    bulletType[2].hue = vec3{1.0, 0.7, 0.4};
+
+    bulletType[3].radius = 0.008;
+    bulletType[3].alive = nullptr;
+    bulletType[3].damage = 1.0;
+    bulletType[3].hue = vec3{1.0, 0.7, 0.4};
+
+    bulletType[4].radius = 0.008;
+    bulletType[4].alive = nullptr;
+    bulletType[4].damage = 1.0;
+    bulletType[4].hue = vec3{1.0, 0.7, 0.4};
+
+    bulletType[5].tex = bulletType[0].tex;
+    bulletType[5].radius = 0.03;
+    bulletType[5].alive = nullptr;
+    bulletType[5].damage = 1.0;
+    bulletType[5].hue = vec3{1.0, 0.1, 0.0};
+
+
 }
 
 void bulletpool::initP(int c)
@@ -71,13 +97,15 @@ void bulletpool::initP(int c)
 
     fireAngle = 0.0;
 
+
     tLoad->loadTexture("images/sprites/bullets/playerBullet.png", bulletType[0].tex);
     tLoad->loadTexture("images/sprites/bullets/playerBullet.png", bulletType[0].mask);
 
     bulletType[0].radius = 0.01;
     bulletType[0].alive = nullptr;
     bulletType[0].damage = 1.0;
-    bulletType[0].hue = vec3{0.6, 1.0, 0.85};
+    bulletType[0].hue = vec3{1, 1.0, 1};
+        //bulletType[0].hue = vec3{0.6, 1.0, 0.85};
 
 }
 
@@ -129,7 +157,7 @@ void bulletpool::drawMasks(vec2 plyPos)
     glEnable(GL_TEXTURE_2D);
     glColor3f(1.0,0.0,0.0);
     for(int i = 0;i < typeCount;i++){
-        glBindTexture(GL_TEXTURE_2D, bulletType[i].mask);
+        glBindTexture(GL_TEXTURE_2D, bulletType[i].tex);
         dll* temp = bulletType[i].alive;
         while(temp!= nullptr){
             int index = temp->index;
@@ -324,11 +352,11 @@ void bulletpool::playerFire(int type, int cycle, vec2 plyPos)
 }
 
 
-void bulletpool::fire(int type, int cycle, vec2 origin, vec2 plyPos)
+void bulletpool::fire(int type, int cycle, vec2 origin, vec2 plyPos, float health)
 {
     switch(type){
     case 0:
-        doomSpiral(cycle, origin);
+        fireOcto(cycle, origin, plyPos, health);
         break;
     case 1:
         aimed(cycle,origin, plyPos);
@@ -338,6 +366,33 @@ void bulletpool::fire(int type, int cycle, vec2 origin, vec2 plyPos)
 
 }
 float doomMod = 1.0;
+
+void bulletpool::fireOcto(int cycle, vec2 origin, vec2 player, float health)
+{
+    int typeMod = 0;
+    if(health <= 0.3){
+        typeMod = 5;
+    }
+    if((cycle) % 40 == 7){
+        float mainOffset = PI * 0.05 * float(cycle / 40);
+        float cycleIterator = 0.0;
+        for(int i = 0;i < 8; i++){
+            spawn(typeMod, 1000, -0.0015, 0.0000, mainOffset + cycleIterator, 0.0, origin);
+            cycleIterator+= PI*0.25;
+        }
+
+    }
+    if(health <=0.6 && (cycle) % 40 == 27){
+        float mainOffset = -PI * 0.05 * float(cycle / 40);
+        float cycleIterator = 0.0;
+        for(int i = 0;i < 8; i++){
+            spawn(typeMod, 1000, -0.0015, 0.0000, mainOffset + cycleIterator, 0.0, origin);
+            cycleIterator+= PI*0.25;
+        }
+    }
+}
+
+
 void bulletpool::doomSpiral(int cycle, vec2 origin)
 {
     if((10+cycle)%10 == 0){

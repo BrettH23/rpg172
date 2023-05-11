@@ -26,11 +26,11 @@ player::player()
     theta = 0.0;
 
     maxHP = 4.0;
-    attack = 10.0;
+    attack = 1.0;
 
     invul = 0;
 
-    dUp = dDown = dRight = dLeft = firing = false; //determines which directions are being held allowing orthogonal movement
+    dUp = dDown = dRight = dLeft = firing = firing1 = false; //determines which directions are being held allowing orthogonal movement
 }
 
 player::~player()   //destructor for player, needs to clear those animations

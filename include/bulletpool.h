@@ -69,7 +69,8 @@ class bulletpool
         float getDamage(vec2, vec2);
 
         void playerFire(int, int, vec2);
-        void fire(int, int, vec2, vec2);
+        void fire(int, int, vec2, vec2, float);
+        void fireOcto(int, vec2, vec2, float);
         void doomSpiral(int, vec2);
         void aimed(int, vec2, vec2);
 

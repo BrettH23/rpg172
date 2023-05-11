@@ -88,6 +88,7 @@ void drawSquare(float x, float y, float s){
 
 int GLScene::drawScene()
 {
+
     if(menuHud->quit){
         quit = true;
     }
@@ -99,6 +100,7 @@ int GLScene::drawScene()
     double timePassed = double(clock()-timer)/double(CLOCKS_PER_SEC);
     if(timePassed >= 0.015){
         menuHud->tick();
+        snds->tickSounds();
         if(!menuHud->paused){
             timer = clock();
             //std::cout << int(clock()-timer) << ", " << timePassed << std::endl;
@@ -281,6 +283,7 @@ void GLScene::drawCursor()
 
 int GLScene::GLinit()
 {
+
     ShowCursor(FALSE);
     glClearDepth(1.0f);
     glClearColor(0.0f,0.0f,1.0f,0.0f);
@@ -302,10 +305,13 @@ int GLScene::GLinit()
     eBullets->initE(1000);
     pBullets->initP(100);
 
+    snds->initSounds();
+    snds->engine->stopAllSounds();
+    snds->setTrack(5);
 
     writer->initFonts("images/jokerman.png","images/jokerman_outline.png");
     writer->kerning = -0.5;
-    menuHud->init(writer, lv);
+    menuHud->init(writer, lv, snds);
 
     lv->init(ply, eBullets, pBullets);
     lv->loadLevel(0);
@@ -314,8 +320,7 @@ int GLScene::GLinit()
 
     timer = clock();
 
-    snds->initSounds();
-    snds->engine->stopAllSounds();
+
     //snds->playMusic("sounds/gameSound.mp3");
 
     return true;
@@ -350,7 +355,7 @@ int GLScene::winMsg(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
     if(uMsg == WM_LBUTTONDOWN){
 
-        menuHud->click(snds);
+        menuHud->click();
     }
     if(uMsg == WM_RBUTTONDOWN){
 
