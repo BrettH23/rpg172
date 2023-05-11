@@ -342,7 +342,6 @@ void menu::click()
                 currentState = whichOverlay->elements[i].index;
                 if(currentState == 0){
                     paused = false;
-                    sfxEngine->setTrack(levels->currentLevel);
                 }else{
                     sfxEngine->setTrack(5);
                 }
@@ -362,6 +361,7 @@ void menu::click()
                 int whichLevel = whichOverlay->elements[i].index;
                 if(whichLevel == -1)whichLevel = levels->currentLevel;
                 levels->loadLevel(whichLevel);
+                sfxEngine->setTrack(levels->currentLevel);
                 break;
             }
 

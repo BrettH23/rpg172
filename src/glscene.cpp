@@ -88,6 +88,7 @@ void drawSquare(float x, float y, float s){
 
 int GLScene::drawScene()
 {
+
     if(menuHud->quit){
         quit = true;
     }
@@ -282,6 +283,7 @@ void GLScene::drawCursor()
 
 int GLScene::GLinit()
 {
+
     ShowCursor(FALSE);
     glClearDepth(1.0f);
     glClearColor(0.0f,0.0f,1.0f,0.0f);

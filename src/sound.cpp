@@ -39,11 +39,12 @@ void sound::tickSounds()
     }
 }
 
-void sound::setTrack(int x0)
+void sound::setTrack(int newTrack)
 {
-    if(x0 != currentTrack){
+    if(newTrack != currentTrack){
         engine->stopAllSounds();
-        currentTrack = x0;
+        currentTrack = newTrack;
+        engine->play2D(tracks[currentTrack],true);
     }
 
 }

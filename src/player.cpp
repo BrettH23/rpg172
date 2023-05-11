@@ -26,7 +26,7 @@ player::player()
     theta = 0.0;
 
     maxHP = 4.0;
-    attack = 10.0;
+    attack = 1.0;
 
     invul = 0;
 

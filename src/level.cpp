@@ -41,7 +41,7 @@ void level::init(player *p, bulletpool *eB, bulletpool *pB)
     eMaxHP[1] = 60.0;
     eMaxHP[2] = 80.0;
     eMaxHP[3] = 150.0;
-    eMaxHP[4] = 60.0;
+    eMaxHP[4] = 20.0;
 
 
     levelList = new levelData[totalLevels];
@@ -75,11 +75,11 @@ void level::buildLevels()
     initLevel(4, levelList[0]);
     levelList[0].scoreRank = 'F';
     levelList[0].highScore = 0;
-    behaviorType b1[] = {STILL, ZAG, ORBIT, ORBIT};
+    behaviorType b1[] = {STILL, ZAG, FALL, ORBIT};
     int e1[] = {0,1,4,3};
-    float t1[] = {0.0, PI, 0.5, 0.0};
-    vec2 o1[] = {vec2{0.0,0.0},  vec2{-0.1,0.1},   vec2{0.0,0.1},   vec2{0.1,0.1}};
-    vec2 m1[] = {vec2{0.0,0.0},  vec2{0.2,0.1},  vec2{0.2,0.2},  vec2{0.15,0.15}};
+    float t1[] = {0.0, PI, 2.0, 0.0};
+    vec2 o1[] = {vec2{0.0,0.0},  vec2{-0.1,0.1},   vec2{0.0,1.2},   vec2{0.1,0.1}};
+    vec2 m1[] = {vec2{0.0,0.0},  vec2{0.2,0.1},  vec2{0.0, -0.005},  vec2{0.15,0.15}};
 
     for(int i = 0; i < 4; i++){
         levelList[0].behs[i] = b1[i];
@@ -199,12 +199,22 @@ void level::tickLevel()
                 updatedX = l->mods[i].x * (sin(tOffset + l->thetas[i]))  + l->origins[i].x;
                 updatedY = l->mods[i].y * (sin(tOffset + l->thetas[i]))  + l->origins[i].y;
                 break;
+            case FALL:
+                if(finalTime > l->thetas[i]){
+                    updatedX = enemies[i].position.x + l->mods[i].x;
+
+                    updatedY = enemies[i].position.y + l->mods[i].y;
+                    std::cout << updatedY << ", " << enemies[i].position.y << ", " << l->mods[i].y << std::endl;
+                }
+                break;
             case ORBIT:
                 updatedX = l->mods[i].x * (sin(tOffset + l->thetas[i]) + l->origins[i].x);
                 updatedY = l->mods[i].y * (cos(tOffset + l->thetas[i]) + l->origins[i].y);
                 bool modifyOffset =  0.0 > l->mods[i].x * l->mods[i].y;
                 //enemies[i].theta = float(2 * int(modifyOffset) - 1) * tOffset *180.0/ PI;
                 break;
+
+
             }
             if(updatedX > tempX){
                 enemies[i].actions(enemies[i].WALKL);
@@ -216,7 +226,7 @@ void level::tickLevel()
                 enemies[i].position.y+= 0.6 * (1-cos((PI/2.0) * (float(delay)/400.0)));
                 delay--;
             }else{
-                eBullets->fire(enemies[i].type, bulletCycle, vec2{enemies[i].position.x, enemies[i].position.y}, vec2{ply->position.x, ply->position.y});
+                eBullets->fire(enemies[i].type, bulletCycle, vec2{enemies[i].position.x, enemies[i].position.y}, vec2{ply->position.x, ply->position.y}, (enemies[i].HP / enemies[i].maxHP));
             }
 
 
